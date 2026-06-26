@@ -1,1020 +1,621 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Million Pixel Page — $0.01 per pixel · Own a piece of the internet</title>
+<title>CatScreen — Cribado computacional de catalizadores</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
-
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* =========================================================
-   OWNER CONFIG — edit colours / site name here if needed
-   Full config is in the <script> CONFIG block below
-========================================================= */
-:root {
-  --gold:    #f5c842;
-  --gold2:   #e8a800;
-  --bg:      #0d0d0d;
-  --surface: #141414;
-  --border:  #2a2a2a;
-  --text:    #e8e8e8;
-  --muted:   #666;
-  --green:   #39ff14;
-  --red:     #ff3131;
-  --blue:    #00aaff;
+:root{
+  --vac:#0A0C12;
+  --vac2:#10131D;
+  --panel:#141826;
+  --line:rgba(232,151,90,.16);
+  --cu:#E8975A;
+  --cu-hi:#FFC08A;
+  --cu-deep:#B05A28;
+  --ox:#FF4D2E;
+  --cyan:#7DE3D8;
+  --ink:#EFE9E0;
+  --mut:#9296A8;
+  --disp:'Unbounded',sans-serif;
+  --body:'IBM Plex Sans',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
 }
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--vac);color:var(--ink);font-family:var(--body);font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--cu);color:#1a0d04}
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'IBM Plex Mono', monospace;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+/* ---------- intro ---------- */
+#intro{position:fixed;inset:0;background:var(--vac);z-index:200;display:flex;align-items:center;justify-content:center;transition:opacity .9s ease,visibility .9s}
+#intro.gone{opacity:0;visibility:hidden}
+#intro .word{font-family:var(--disp);font-weight:900;font-size:clamp(2rem,7vw,5rem);letter-spacing:.02em;background:linear-gradient(100deg,var(--cu-deep),var(--cu-hi) 50%,var(--ox));-webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;animation:introIn 1.2s ease forwards}
+@keyframes introIn{0%{opacity:0;letter-spacing:.4em;filter:blur(8px)}100%{opacity:1;letter-spacing:.02em;filter:blur(0)}}
 
-/* ── scanline effect ── */
-body::after {
-  content: '';
-  position: fixed; inset: 0; pointer-events: none; z-index: 9999;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,.07) 2px,
-    rgba(0,0,0,.07) 4px
-  );
-}
+/* ---------- nav ---------- */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.1rem clamp(1.2rem,4vw,3rem);backdrop-filter:blur(14px);background:linear-gradient(rgba(10,12,18,.85),rgba(10,12,18,.4));border-bottom:1px solid transparent;transition:border-color .4s}
+nav.scrolled{border-color:var(--line)}
+.brand{display:flex;align-items:center;gap:.65rem;text-decoration:none;color:var(--ink)}
+.brand svg{width:30px;height:30px}
+.brand b{font-family:var(--disp);font-weight:700;font-size:1.02rem;letter-spacing:.04em}
+.brand b span{color:var(--cu)}
+.navlinks{display:flex;gap:2rem;align-items:center}
+.navlinks a{color:var(--mut);text-decoration:none;font-size:.84rem;font-family:var(--mono);letter-spacing:.06em;transition:color .25s}
+.navlinks a:hover,.navlinks a:focus-visible{color:var(--cu-hi)}
+.cta{font-family:var(--mono);font-size:.8rem;letter-spacing:.06em;color:#160a03!important;background:linear-gradient(110deg,var(--cu),var(--cu-hi));padding:.55rem 1.1rem;border-radius:999px;font-weight:500;transition:transform .25s,box-shadow .25s}
+.cta:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(232,151,90,.35);color:#160a03!important}
+@media(max-width:760px){.navlinks a:not(.cta){display:none}}
 
-/* ── HEADER ── */
-.site-header {
-  background: linear-gradient(135deg, #1a1400 0%, #3a2a00 50%, #1a1400 100%);
-  border-bottom: 3px solid var(--gold);
-  padding: 0;
-  position: relative;
-  overflow: hidden;
-}
-.site-header::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(245,200,66,.15) 0%, transparent 70%);
-}
+/* ---------- hero ---------- */
+#hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end}
+#c3d{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-grad{position:absolute;inset:0;pointer-events:none;background:
+  radial-gradient(120% 70% at 70% 30%,transparent 40%,rgba(10,12,18,.78) 100%),
+  linear-gradient(rgba(10,12,18,.55),transparent 30%,transparent 55%,rgba(10,12,18,.92))}
+.hero-inner{position:relative;z-index:5;width:100%;max-width:1480px;margin:0 auto;padding:7.5rem clamp(1.2rem,4vw,3rem) 2.4rem;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,430px);gap:2.5rem;align-items:end}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:.7rem;margin-bottom:1.3rem}
+.eyebrow::before{content:"";width:34px;height:1px;background:var(--cyan);opacity:.6}
+h1{font-family:var(--disp);font-weight:700;font-size:clamp(2rem,4.6vw,3.9rem);line-height:1.08;letter-spacing:-.01em;max-width:13ch}
+h1 .ox-w{background:linear-gradient(100deg,var(--cu-hi),var(--ox));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-sub{margin-top:1.4rem;max-width:46ch;color:var(--mut);font-size:clamp(.95rem,1.2vw,1.08rem);line-height:1.7}
+.hero-sub b{color:var(--ink);font-weight:500}
+.hero-actions{display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:.85rem;letter-spacing:.05em;text-decoration:none;padding:.85rem 1.5rem;border-radius:999px;transition:all .25s}
+.btn.solid{background:linear-gradient(110deg,var(--cu),var(--cu-hi));color:#160a03;font-weight:500}
+.btn.solid:hover{transform:translateY(-2px);box-shadow:0 10px 35px rgba(232,151,90,.4)}
+.btn.ghost{border:1px solid rgba(239,233,224,.25);color:var(--ink)}
+.btn.ghost:hover{border-color:var(--cu);color:var(--cu-hi)}
 
-.header-inner {
-  max-width: 1040px; margin: 0 auto;
-  padding: 1.5rem 1rem;
-  display: flex; flex-direction: column; align-items: center;
-  gap: .8rem; position: relative; z-index: 1;
-}
+/* simulation panel */
+.sim{background:rgba(16,19,29,.72);border:1px solid var(--line);border-radius:18px;padding:1.4rem 1.4rem 1.2rem;backdrop-filter:blur(16px);box-shadow:0 24px 70px rgba(0,0,0,.5)}
+.sim-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1.1rem}
+.sim-head .t{font-family:var(--mono);font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--cu)}
+.sim-head .live{font-family:var(--mono);font-size:.68rem;color:var(--cyan);display:flex;gap:.45rem;align-items:center}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(125,227,216,.5)}50%{opacity:.5;box-shadow:0 0 0 6px rgba(125,227,216,0)}}
+.sim label{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.78rem;color:var(--mut);margin-bottom:.55rem}
+.sim label output{color:var(--ink)}
+input[type=range]{width:100%;appearance:none;height:4px;border-radius:4px;outline:none;cursor:pointer;background:linear-gradient(90deg,#3a4154,var(--cu) 55%,var(--ox))}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;background:var(--ink);border:4px solid var(--vac);box-shadow:0 0 0 2px var(--cu),0 4px 14px rgba(0,0,0,.6);transition:transform .15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--ink);border:3px solid var(--cu)}
+.scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.62rem;color:#5b6072;margin-top:.4rem}
+.reads{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:1.15rem}
+.read{background:rgba(10,12,18,.55);border:1px solid rgba(239,233,224,.07);border-radius:10px;padding:.65rem .8rem}
+.read .k{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--mut);text-transform:uppercase}
+.read .v{font-family:var(--mono);font-size:1.02rem;margin-top:.2rem;color:var(--cyan)}
+.read .v.ox{color:var(--ox)}
+.phase{grid-column:1/-1;display:flex;align-items:center;gap:.7rem;background:rgba(10,12,18,.55);border:1px solid rgba(239,233,224,.07);border-radius:10px;padding:.7rem .8rem}
+.phase .dot{width:10px;height:10px;border-radius:50%;background:var(--cu);transition:background .4s;flex-shrink:0}
+.phase .name{font-size:.86rem;color:var(--ink);font-weight:400}
+.phase .name small{display:block;font-family:var(--mono);font-size:.62rem;color:var(--mut);margin-top:.15rem;letter-spacing:.05em}
+.sim-foot{font-family:var(--mono);font-size:.6rem;color:#565b6d;margin-top:.9rem;line-height:1.55}
+@media(max-width:980px){.hero-inner{grid-template-columns:1fr;padding-top:6.5rem}.sim{max-width:520px}}
 
-.site-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: clamp(.9rem, 3vw, 1.6rem);
-  color: var(--gold);
-  text-shadow: 0 0 20px rgba(245,200,66,.5), 3px 3px 0 #000;
-  text-align: center; line-height: 1.6;
-  letter-spacing: .02em;
-}
+/* ---------- strip ---------- */
+.strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;background:var(--vac2)}
+.strip-track{display:flex;gap:4rem;padding:1rem 0;white-space:nowrap;animation:marq 28s linear infinite;width:max-content}
+.strip:hover .strip-track{animation-play-state:paused}
+@keyframes marq{to{transform:translateX(-50%)}}
+.strip span{font-family:var(--mono);font-size:.82rem;letter-spacing:.12em;color:var(--mut)}
+.strip b{color:var(--cu-hi);font-weight:500}
 
-.header-tagline {
-  font-family: 'VT323', monospace;
-  font-size: clamp(1.2rem, 3vw, 1.6rem);
-  color: var(--text); letter-spacing: .1em;
-  display: flex; flex-wrap: wrap; justify-content: center; gap: .8rem;
-}
-.header-tagline span { color: var(--gold); }
-.header-tagline .dot { color: var(--muted); }
+/* ---------- sections ---------- */
+section{padding:clamp(4.5rem,9vw,8rem) clamp(1.2rem,4vw,3rem);max-width:1480px;margin:0 auto}
+.sec-eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.24em;text-transform:uppercase;color:var(--cu);margin-bottom:1rem}
+h2{font-family:var(--disp);font-weight:700;font-size:clamp(1.5rem,3vw,2.5rem);line-height:1.15;max-width:22ch}
+.sec-sub{color:var(--mut);max-width:60ch;margin-top:1.1rem;line-height:1.75}
+.reveal{opacity:0;transform:translateY(34px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
 
-.header-stats {
-  display: flex; gap: 0;
-  border: 1px solid var(--gold2);
-  overflow: hidden; border-radius: 2px;
-}
-.hstat {
-  padding: .5rem 1.2rem; text-align: center;
-  border-right: 1px solid var(--gold2);
-  background: rgba(0,0,0,.3);
-}
-.hstat:last-child { border-right: none; }
-.hstat-num {
-  font-family: 'VT323', monospace;
-  font-size: 1.6rem; color: var(--green); display: block; line-height: 1;
-}
-.hstat-lbl { font-size: .55rem; color: var(--muted); letter-spacing: .1em; }
+/* metodología */
+.meth{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:3rem}
+.mcard{position:relative;background:var(--panel);border:1px solid rgba(239,233,224,.07);border-radius:16px;padding:2rem 1.7rem;overflow:hidden;transition:transform .35s,border-color .35s}
+.mcard:hover{transform:translateY(-6px);border-color:var(--line)}
+.mcard::after{content:"";position:absolute;inset:auto -30% -55% -30%;height:70%;background:radial-gradient(ellipse at center,rgba(232,151,90,.14),transparent 70%);opacity:0;transition:opacity .4s}
+.mcard:hover::after{opacity:1}
+.mcard .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;color:var(--cyan);text-transform:uppercase}
+.mcard h3{font-family:var(--disp);font-weight:500;font-size:1.25rem;margin:.8rem 0 .9rem;letter-spacing:.01em}
+.mcard p{color:var(--mut);font-size:.92rem;line-height:1.7}
+.mcard .formula{margin-top:1.3rem;font-family:var(--mono);font-size:.72rem;color:#6a7087;border-top:1px dashed rgba(239,233,224,.12);padding-top:.9rem}
+@media(max-width:900px){.meth{grid-template-columns:1fr}}
 
-/* ── NAV ── */
-nav {
-  background: #111;
-  border-bottom: 2px solid var(--border);
-  display: flex; justify-content: center;
-  flex-wrap: wrap; gap: 0;
-}
-nav a {
-  font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--muted); text-decoration: none;
-  padding: .7rem 1.2rem;
-  border-right: 1px solid var(--border);
-  transition: color .15s, background .15s;
-}
-nav a:first-child { border-left: 1px solid var(--border); }
-nav a:hover { color: var(--gold); background: rgba(245,200,66,.05); }
+/* proceso */
+.flow{margin-top:3rem;display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative}
+.flow::before{content:"";position:absolute;top:21px;left:6%;right:6%;height:1px;background:linear-gradient(90deg,transparent,var(--cu) 15%,var(--ox) 85%,transparent)}
+.step{padding:0 .9rem;text-align:left}
+.step .n{width:42px;height:42px;border-radius:50%;background:var(--vac);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.78rem;color:var(--cu-hi);margin-bottom:1.1rem;position:relative;z-index:2}
+.step h4{font-size:.95rem;font-weight:500;margin-bottom:.45rem}
+.step p{color:var(--mut);font-size:.8rem;line-height:1.6}
+.step .d{font-family:var(--mono);font-size:.64rem;color:var(--cyan);margin-top:.55rem;letter-spacing:.08em}
+@media(max-width:900px){.flow{grid-template-columns:1fr;gap:1.8rem}.flow::before{display:none}.step{display:grid;grid-template-columns:42px 1fr;gap:1rem}.step .n{margin:0}}
 
-/* ── BUY BAR ── */
-.buy-bar {
-  background: linear-gradient(90deg, #0d1a00, #001a0d, #0d1a00);
-  border-bottom: 1px solid #1a3a1a;
-  padding: .6rem 1rem;
-  display: flex; align-items: center; justify-content: center;
-  gap: 1rem; flex-wrap: wrap;
-}
-.buy-bar-text {
-  font-family: 'VT323', monospace;
-  font-size: 1.2rem; color: var(--green);
-  letter-spacing: .05em;
-}
-.buy-bar-text strong { color: #fff; }
-.btn-buy-now {
-  font-family: 'Press Start 2P', monospace;
-  font-size: .6rem; letter-spacing: .05em;
-  background: var(--green); color: #000;
-  border: none; padding: .5rem 1rem;
-  cursor: pointer; border-radius: 2px;
-  box-shadow: 3px 3px 0 #007700;
-  transition: transform .1s, box-shadow .1s;
-}
-.btn-buy-now:hover {
-  transform: translate(-1px,-1px);
-  box-shadow: 4px 4px 0 #007700;
-}
-.btn-buy-now:active {
-  transform: translate(2px,2px);
-  box-shadow: 1px 1px 0 #007700;
-}
+/* servicios */
+#servicios{position:relative}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:3rem}
+.tier{position:relative;background:var(--panel);border:1px solid rgba(239,233,224,.07);border-radius:18px;padding:2.1rem 1.8rem;display:flex;flex-direction:column;transition:transform .35s,border-color .35s,box-shadow .35s}
+.tier:hover{transform:translateY(-8px);border-color:var(--line);box-shadow:0 30px 60px rgba(0,0,0,.45)}
+.tier.featured{background:linear-gradient(160deg,#1b1410,#141826 60%);border-color:rgba(232,151,90,.35)}
+.tier .pill{position:absolute;top:-12px;left:1.8rem;font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;background:linear-gradient(110deg,var(--cu),var(--ox));color:#1a0d04;padding:.3rem .8rem;border-radius:999px;font-weight:500}
+.tier .line-name{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan)}
+.tier h3{font-family:var(--disp);font-weight:500;font-size:1.3rem;margin:.7rem 0 .3rem}
+.tier .for{color:var(--mut);font-size:.83rem;min-height:2.6em;line-height:1.6}
+.tier .price{margin:1.4rem 0 .2rem;font-family:var(--disp);font-weight:700;font-size:1.9rem;color:var(--cu-hi)}
+.tier .per{font-family:var(--mono);font-size:.68rem;color:var(--mut);letter-spacing:.08em}
+.tier ul{list-style:none;margin:1.4rem 0 1.8rem;display:grid;gap:.65rem}
+.tier li{font-size:.86rem;color:#c9cbd6;padding-left:1.4rem;position:relative;line-height:1.55}
+.tier li::before{content:"›";position:absolute;left:.2rem;color:var(--cu);font-family:var(--mono)}
+.tier .btn{margin-top:auto;text-align:center}
+@media(max-width:980px){.tiers{grid-template-columns:1fr;max-width:520px}}
 
-/* ── CANVAS WRAPPER ── */
-.canvas-section {
-  display: flex; flex-direction: column; align-items: center;
-  padding: 1.5rem 0 2rem;
-}
+/* comparativa */
+#ahorro{background:radial-gradient(80% 60% at 50% 0%,rgba(232,151,90,.07),transparent);border-top:1px solid var(--line);max-width:none}
+.ahorro-inner{max-width:1480px;margin:0 auto}
+.duel{display:grid;grid-template-columns:1fr auto 1fr;gap:2rem;align-items:stretch;margin-top:3.4rem}
+.route{background:var(--panel);border:1px solid rgba(239,233,224,.07);border-radius:18px;padding:2.2rem 2rem}
+.route.exp{border-color:rgba(146,150,168,.2)}
+.route.comp{border-color:rgba(232,151,90,.4);background:linear-gradient(160deg,#1b1410,#141826 70%)}
+.route .rt{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
+.route.comp .rt{color:var(--cu)}
+.route .big{font-family:var(--disp);font-weight:900;font-size:clamp(2.2rem,4.5vw,3.6rem);margin:.9rem 0 .2rem;font-variant-numeric:tabular-nums}
+.route.exp .big{color:#aeb2c2}
+.route.comp .big{background:linear-gradient(100deg,var(--cu-hi),var(--ox));-webkit-background-clip:text;background-clip:text;color:transparent}
+.route .unit{font-family:var(--mono);font-size:.72rem;color:var(--mut);letter-spacing:.08em}
+.route .bar{height:7px;border-radius:99px;background:rgba(239,233,224,.08);margin:1.6rem 0 .6rem;overflow:hidden}
+.route .bar i{display:block;height:100%;border-radius:99px;width:0;transition:width 1.4s cubic-bezier(.2,.7,.2,1)}
+.route.exp .bar i{background:#6a7087}
+.route.comp .bar i{background:linear-gradient(90deg,var(--cu),var(--ox))}
+.route .tm{font-family:var(--mono);font-size:.72rem;color:var(--mut)}
+.vs{display:flex;align-items:center}
+.vs .pct{text-align:center}
+.vs .pct .num{font-family:var(--disp);font-weight:900;font-size:clamp(2rem,4vw,3.2rem);color:var(--cyan)}
+.vs .pct .lab{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;color:var(--mut);text-transform:uppercase;margin-top:.3rem}
+@media(max-width:900px){.duel{grid-template-columns:1fr}.vs{justify-content:center;padding:.5rem 0}}
+.footnote{font-family:var(--mono);font-size:.66rem;color:#565b6d;margin-top:2rem;line-height:1.7;max-width:80ch}
 
-.canvas-info {
-  width: 1000px; max-width: 100%;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 0 .5rem .5rem; flex-wrap: wrap; gap: .5rem;
-}
-.canvas-hint {
-  font-size: .65rem; color: var(--muted); letter-spacing: .08em;
-}
-.canvas-hint strong { color: var(--gold); }
-#selection-info {
-  font-family: 'VT323', monospace;
-  font-size: 1.1rem; color: var(--green);
-  min-height: 1.4rem; letter-spacing: .05em;
-}
+/* contacto / footer */
+#contacto{text-align:center}
+#contacto h2{margin:0 auto}
+.contact-cta{margin-top:2.4rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+footer{border-top:1px solid var(--line);padding:2.2rem clamp(1.2rem,4vw,3rem);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;max-width:1480px;margin:0 auto}
+footer .fm{font-family:var(--mono);font-size:.68rem;color:#565b6d;letter-spacing:.06em;line-height:1.7}
+footer .fm a{color:var(--mut);text-decoration:none}
+footer .fm a:hover{color:var(--cu-hi)}
 
-.canvas-outer {
-  width: 1000px; max-width: 100%;
-  overflow-x: auto;
-  border: 2px solid var(--border);
-  position: relative;
-  box-shadow: 0 0 40px rgba(245,200,66,.08), inset 0 0 0 1px #1a1a1a;
-}
-
-#pixel-canvas {
-  display: block;
-  cursor: crosshair;
-  image-rendering: pixelated;
-}
-
-/* tooltip */
-#tooltip {
-  position: fixed;
-  background: rgba(10,10,10,.95);
-  border: 1px solid var(--gold2);
-  color: var(--text);
-  font-size: .65rem; letter-spacing: .08em;
-  padding: .4rem .7rem;
-  pointer-events: none; z-index: 200;
-  display: none; white-space: nowrap;
-  box-shadow: 3px 3px 0 rgba(245,200,66,.2);
-}
-
-/* ── PIXEL LIST ── */
-.pixel-list-section {
-  max-width: 1040px; margin: 0 auto;
-  padding: 0 1rem 3rem;
-}
-.section-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: .75rem; color: var(--gold);
-  letter-spacing: .05em; padding: 1rem 0 .8rem;
-  border-top: 1px solid var(--border);
-  display: flex; align-items: center; gap: .8rem;
-}
-.section-title::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
-}
-.ads-table { width: 100%; border-collapse: collapse; font-size: .7rem; }
-.ads-table th {
-  text-align: left; padding: .5rem .7rem;
-  border-bottom: 2px solid var(--gold2);
-  font-size: .55rem; letter-spacing: .12em; color: var(--muted);
-  text-transform: uppercase;
-}
-.ads-table td {
-  padding: .5rem .7rem; border-bottom: 1px solid var(--border);
-  color: var(--muted);
-}
-.ads-table tr:hover td { background: #161616; }
-.empty-row td {
-  text-align: center; color: #333; padding: 2rem;
-  font-family: 'VT323', monospace; font-size: 1.2rem;
-  letter-spacing: .1em;
-}
-
-/* ── HOW IT WORKS ── */
-.how-section {
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 2rem 1rem;
-  margin-bottom: 2rem;
-}
-.how-inner {
-  max-width: 1040px; margin: 0 auto;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-}
-.how-step { padding: 1rem; border: 1px solid var(--border); position: relative; }
-.step-num {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 1.5rem; color: var(--gold);
-  opacity: .15; position: absolute; top: .5rem; right: .7rem;
-}
-.step-title {
-  font-size: .7rem; font-weight: 700; color: var(--gold);
-  margin-bottom: .5rem; letter-spacing: .08em;
-}
-.step-desc { font-size: .65rem; color: var(--muted); line-height: 1.8; }
-
-/* ── FOOTER ── */
-footer {
-  background: #080808;
-  border-top: 2px solid var(--border);
-  padding: 1.5rem 1rem;
-  text-align: center;
-}
-footer p { font-size: .6rem; color: #333; letter-spacing: .08em; line-height: 2; }
-footer a { color: var(--gold2); text-decoration: none; }
-footer a:hover { text-decoration: underline; }
-
-/* ── MODAL ── */
-.modal-overlay {
-  position: fixed; inset: 0; z-index: 500;
-  background: rgba(0,0,0,.88);
-  backdrop-filter: blur(4px);
-  display: none; align-items: center; justify-content: center;
-  padding: 1rem;
-}
-.modal-overlay.open { display: flex; }
-
-.modal {
-  background: #0f0f0f;
-  border: 2px solid var(--gold2);
-  width: 100%; max-width: 540px;
-  max-height: 90vh; overflow-y: auto;
-  position: relative;
-  box-shadow: 0 0 60px rgba(245,200,66,.15), 8px 8px 0 rgba(245,200,66,.1);
-  animation: popIn .2s ease;
-}
-@keyframes popIn {
-  from { transform: scale(.95) translateY(10px); opacity: 0; }
-  to   { transform: scale(1)   translateY(0);    opacity: 1; }
-}
-
-.modal-head {
-  background: linear-gradient(90deg, #1a1200, #2a2000);
-  border-bottom: 2px solid var(--gold2);
-  padding: 1.2rem 1.5rem;
-  display: flex; align-items: flex-start; justify-content: space-between;
-}
-.modal-head-left {}
-.modal-head-tag {
-  font-size: .55rem; letter-spacing: .15em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: .3rem;
-}
-.modal-head-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: .8rem; color: var(--gold); line-height: 1.6;
-}
-.modal-close {
-  background: none; border: 1px solid var(--border);
-  color: var(--muted); cursor: pointer;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: .7rem; padding: .3rem .6rem;
-  transition: all .15s; flex-shrink: 0;
-  margin-left: 1rem; margin-top: .2rem;
-}
-.modal-close:hover { border-color: var(--red); color: var(--red); }
-
-.modal-body { padding: 1.5rem; }
-
-.m-summary {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
-  gap: 1px; background: var(--border);
-  border: 1px solid var(--border); margin-bottom: 1.5rem;
-}
-.m-sum-item {
-  background: var(--surface); padding: .8rem;
-  text-align: center;
-}
-.m-sum-val {
-  font-family: 'VT323', monospace;
-  font-size: 1.4rem; color: var(--green); display: block;
-}
-.m-sum-lbl { font-size: .55rem; color: var(--muted); letter-spacing: .1em; }
-
-.pay-block { margin-bottom: 1.2rem; }
-.pay-block-title {
-  font-size: .6rem; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: .7rem;
-  display: flex; align-items: center; gap: .6rem;
-}
-.pay-block-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-.paypal-cta {
-  display: flex; align-items: center; justify-content: center; gap: .6rem;
-  width: 100%; background: #003087; color: #fff;
-  border: none; padding: .9rem; cursor: pointer; font-size: .85rem;
-  font-family: 'IBM Plex Mono', monospace; font-weight: 700;
-  border-radius: 2px; text-decoration: none;
-  transition: background .15s;
-}
-.paypal-cta:hover { background: #001f5c; }
-
-.crypto-row {
-  display: flex; align-items: center; gap: .8rem;
-  border: 1px solid var(--border); padding: .7rem;
-  margin-bottom: .4rem; border-radius: 2px;
-  transition: border-color .15s;
-}
-.crypto-row:hover { border-color: var(--gold2); }
-.c-icon {
-  width: 28px; height: 28px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: .75rem; flex-shrink: 0;
-}
-.c-btc  { background: #f7931a; color: #000; }
-.c-eth  { background: #627eea; color: #fff; }
-.c-usdt { background: #26a17b; color: #fff; }
-.c-info { flex: 1; min-width: 0; }
-.c-name { font-size: .7rem; font-weight: 700; margin-bottom: .15rem; }
-.c-addr {
-  font-size: .58rem; color: var(--muted);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.c-copy {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: .55rem; letter-spacing: .08em;
-  border: 1px solid var(--border); background: none;
-  color: var(--muted); padding: .25rem .5rem;
-  cursor: pointer; flex-shrink: 0; border-radius: 1px;
-  transition: all .15s; text-transform: uppercase;
-}
-.c-copy:hover { border-color: var(--gold); color: var(--gold); }
-.c-copy.ok    { border-color: var(--green); color: var(--green); }
-
-.m-instructions {
-  font-size: .65rem; color: var(--muted); line-height: 2;
-  padding: 1rem; border: 1px solid var(--border);
-  border-left: 3px solid var(--gold2);
-  margin-top: 1rem;
-}
-.m-instructions strong { color: var(--text); }
-.m-instructions a { color: var(--gold); text-decoration: none; }
-
-/* ── FORM FOR AD SUBMISSION ── */
-.ad-form { margin-top: 1.2rem; }
-.form-row { margin-bottom: .7rem; }
-.form-label {
-  font-size: .58rem; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--muted); display: block; margin-bottom: .3rem;
-}
-.form-input {
-  width: 100%; background: var(--surface);
-  border: 1px solid var(--border); color: var(--text);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: .7rem; padding: .5rem .7rem; border-radius: 1px;
-  transition: border-color .15s; outline: none;
-}
-.form-input:focus { border-color: var(--gold2); }
-.form-textarea { resize: vertical; min-height: 60px; }
-.form-submit {
-  width: 100%; font-family: 'Press Start 2P', monospace;
-  font-size: .6rem; background: var(--gold);
-  color: #000; border: none; padding: .8rem;
-  cursor: pointer; letter-spacing: .05em;
-  box-shadow: 3px 3px 0 var(--gold2);
-  transition: transform .1s, box-shadow .1s;
-}
-.form-submit:hover {
-  transform: translate(-1px,-1px);
-  box-shadow: 4px 4px 0 var(--gold2);
-}
-
-/* ── responsive ── */
-@media(max-width: 680px) {
-  .hstat { padding: .4rem .7rem; }
-  .hstat-num { font-size: 1.2rem; }
-  .how-section { padding: 1.5rem .5rem; }
-  .m-summary { grid-template-columns: 1fr 1fr; }
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .strip-track{animation:none}
+  html{scroll-behavior:auto}
 }
 </style>
 </head>
 <body>
 
-<!-- ============================================================
-     ██████╗  ██████╗ ███╗   ██╗███████╗██╗ ██████╗
-     ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
-     ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
-     ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
-     ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
-      ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
+<div id="intro" aria-hidden="true"><div class="word">CatScreen</div></div>
 
-  Edit the CONFIG object below to customise your page.
-  To add a sold ad: push an object into CONFIG.ads array.
-============================================================ -->
-<script>
-const CONFIG = {
-  // ── Site identity ────────────────────────────────────
-  title:       "The Million Pixel Page",
-  subtitle:    "1,000,000 pixels · $0.01 per pixel · Own a piece of internet history",
-  email:       "emploi.contactch@gmail.com",
+<nav id="nav">
+  <a class="brand" href="#hero" aria-label="CatScreen inicio">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="6.5" fill="#E8975A"/><circle cx="26" cy="9" r="3" fill="#FF4D2E"/><circle cx="6.5" cy="23" r="3" fill="#FF4D2E"/><circle cx="25" cy="24" r="2.2" fill="#7DE3D8"/><path d="M16 16 26 9M16 16 6.5 23M16 16l9 8" stroke="rgba(239,233,224,.35)" stroke-width="1"/></svg>
+    <b>Cat<span>Screen</span></b>
+  </a>
+  <div class="navlinks">
+    <a href="#metodologia">Metodología</a>
+    <a href="#proceso">Proceso</a>
+    <a href="#servicios">Servicios</a>
+    <a href="#ahorro">Ahorro</a>
+    <a class="cta" href="#contacto">Solicitar demo</a>
+  </div>
+</nav>
 
-  // ── Payment ──────────────────────────────────────────
-  paypalMe:    "paypal.me/dorksearch",   // e.g. paypal.me/johndoe
-  wallets: [
-    { coin: "BTC",  network: "Bitcoin",       addr: "176mzgQNygD884X3og6cL5WpxHCfngiZHm",      cls: "c-btc",  icon: "₿" },
-    { coin: "BTC",  network: "BEP20",         addr: "0x4f35d7f377c29cea38d91c559646f031446f67a7", cls: "c-btc",  icon: "₿" },
-    { coin: "ETH",  network: "ERC20",          addr: "0x4f35d7f377c29cea38d91c559646f031446f67a7", cls: "c-eth",  icon: "Ξ" },
-    { coin: "ETH",  network: "BEP20",          addr: "0x4f35d7f377c29cea38d91c559646f031446f67a7", cls: "c-eth",  icon: "Ξ" },
-    { coin: "USDT", network: "ERC20",          addr: "0x4f35d7f377c29cea38d91c559646f031446f67a7", cls: "c-usdt", icon: "₮" },
-    { coin: "USDT", network: "BEP20",          addr: "0x4f35d7f377c29cea38d91c559646f031446f67a7", cls: "c-usdt", icon: "₮" },
-  ],
+<!-- ============ HERO ============ -->
+<header id="hero">
+  <canvas id="c3d" aria-hidden="true"></canvas>
+  <div class="hero-grad"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">Spin-off · Universitat de Barcelona</div>
+      <h1>El catalizador correcto, antes de <span class="ox-w">entrar al laboratorio</span>.</h1>
+      <p class="hero-sub">Cribado computacional de catalizadores heterogéneos en condiciones reales de reacción. Combinamos <b>DFT</b>, <b>Monte Carlo Gran Canónico</b> y potenciales <b>MACE</b> para explorar miles de estructuras por el coste de un solo experimento.</p>
+      <div class="hero-actions">
+        <a class="btn solid" href="#servicios">Ver servicios</a>
+        <a class="btn ghost" href="#metodologia">Cómo funciona</a>
+      </div>
+    </div>
 
-  // ── Pixel pricing ────────────────────────────────────
-  pricePerPixel: 0.01,     // $ per pixel
-  minBlock:      10,       // minimum block size in pixels (min 10×10 = 100px = $50)
-
-  // ── Canvas ───────────────────────────────────────────
-  canvasW: 1000,
-  canvasH: 1000,
-
-  // ── Sold ads ─────────────────────────────────────────
-  // Add entries here after someone pays.
-  // x, y = top-left corner (0-based pixels)
-  // w, h = width and height in pixels
-  // color = background fill (hex)
-  // url   = advertiser link
-  // label = advertiser name shown in list
-  // img   = optional image URL (leave "" if none)
-  ads: [
-    { x:290, y:140, w:130, h:30, color:"#0d0d0d", url:"https://dorksearch.pro", label:"DorkSearch PRO", img:"data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAByAqMDASIAAhEBAxEB/8QAHQAAAQQDAQEAAAAAAAAAAAAAAAEGBwgCAwUECf/EAGIQAAEDAgMCCAYKCwwHBQkAAAEAAgMEBQYREgchCBMiMUFRYXEUYnWBobMyN0JScnSRsbLjFRYXMzY4RpSVwdIjJjVVVmRzgqW00dMJGCQ0VJPCJ0NmkvFERVNXZaKj4fD/xAAcAQEAAQUBAQAAAAAAAAAAAAAAAQMEBQYHAgj/xABGEQABAwIDBAcBDAkCBwAAAAABAAIDBBEFEiEGMUFxE1FhgaGxwZEHFBUiJFJTcqLR0uEWMjM0QkNigsI18CNjkpOy4vH/2gAMAwEAAhEDEQA/AKdIQhEQhCERCEIREp5h3JEp5h3JERCEIREIQhEQlPMEiU8wREiEIREIQhEQhCERL0BIl6AkREJQkShESoCFk0KFBKUBZhvJHnQ0Lc1vJHnXklUnOWsNWQYtrWLYGLyXKkXrz6EaF6dCNAUZlHSLzaEaF6NCNCZk6RaNHJHef1I0L06OSO8/qRo7EzKOkXm0JCxerQsSxMyCReUtSaV6SxYaVN17D1o0pdPJ863aEoZyR3qbqc60aUuhb9CXQozKM68+hGlejR2I0JdOkXnDEuhegMShiZl5Mi0hnJ86TQvUGDTzdKOL7F5zLz0i8pZkkLF69HYsSxTmUiReXQjQvToCNAU5lPSLz6Eujk+db9AS6OSe9RmTpF5tCNC9GgdiCxMyZ15ixJoXp0JNCnMpzrzFqNC9GhGhTdTnXn08k94/Wk0r06OSe8frWJYl0D15y1IWreWLEtU3XsOWghYkLa5qwIUr2CsEH2J8yCj3JUr2sUIQpUoQhCIhCEIiXoKRL0FIiIQhCIhCEIiEo5ikSjmKIkQhCIhdPCdJBX4qs9DVM4ynqa+CGVmZGpjpGhwzG8bieZcxdrAf4c4f8qU3rWoivY/g3bGmvc0YSk3HL+FKv/NWP+rfsa/kjJ+lKv8AzVLsv31/wioE23cIn7muO5MLjB32V4uminNQbnxOesE5aeKdzZdaIuzUcGrY7KwtZhuqgJGWqO51GY7eU8hRtj/gi0hpZKnAuI6gVDQXNorppc1/U1srANP9Zp7Stto4Ydskqw274DrKWn6ZKS5NneP6ro2A/wDmVhsCYvw9jfD0V9w1cG1lG86XbtL4njnY9p3tcOr5M0RfNHE9hvOGb1PZb9bp7fcKc5SwTDIjqIPMQegjMFcxX54WOzWmxvs9qLxSQAX6yROqKeRo5U0QGb4T1jLeOojtKoMN4zRFnBDLUTxwU8Uk00rgyOONpc57icgABvJJ3ZK1myLgpRzUUF12kVtRFJIA8WmjeGlgPRLJv39bWZZe+XC4C2CKe74suOM6+ESR2YNhow4ZgVDxmX97W83wlcO7XCjtVrqrpcahlNR0kLpp5nnJrGNGZJ8yImPaNieye104gp8B2eUD3VVGahx73SFxXnv2wjZJeY9E+CqClcOZ9C59M4f8sgHzghQNjbhc4gku0seDcP2yntrHFsc1xY+WaUdDtLXtazu5Xeu5sj4Vc91xDS2bHlooKOKrkEUdxoNbWRPcQG8ZG4u5OfO4Hd1IiaO3Hgy3DCtuqMQ4Kq6i82uBpkqKOZoNVAwc7mloAkaOnIAjqKrseZvcvq9u7CPlBXz34VWCIMEbW62C3xCK2XNgr6VgHJj1k62DsDwfMQERM3ZZaqG+bSMPWe5wmeirLhFDPGHubrYTvGbSCPMVeA8G/Y0CR9qUn6Uq/wDNVLNh3txYS8qw/SX0td7I96Iok/1b9jX8kZP0pV/5qxl4Nmxt7cm4Wnj7WXOpz9MhTP2t8JiqwJtFu+E48GwV7be9jBUOuDozJqjY/wBjxZy9llz9Ca8PDFqeNbx2z6Hi8+Voux1ZdmcSInBjTgj4Yq4JZsI4guNrqic2Q12mog5vY5gB7e8l3cqtbRcDYlwBf3WXE1vNNORqhkadUU7M8tUb/dD0jpAX0D2R7T8L7TbNLXYfnkjqKYgVdDUANmpyeYkDc5p35OG7ceY7ljtwwBQbRtn9dZKiJnh0bHTW6ctzdDOBuy7HexI6QURfNroCtZwV9j+zzHGy43vE9hfXV/h80PGitni5DdOQyY8DpPQqrVEMtPM+nnjMcsT3MkYedrgciPlV5uA77SJ8qVHzNRE0OEvsX2b4N2QXLEGHMPvorlBPTsjlNdUSZB8rWu5L3kcxPQqjBX64Zn4v14+NUnrmqgoRErQXENa0ucTkABmSeoK7mzLg24BjwJaXYwsUtdfZoBNWSeHTxBjncrQGse0ckEDmz3KA+CTgRuM9qcFXWRCS12MNrakEbnvz/cmHvcM+5pV+XneS4gdJJUFeHFVJ4UWz/ZTs7wZTMsWHjBf7nPopHOuNRJxUbd8kml0hB6GjMEZuCrYxu4KQ+EXjc472p3Cvglc+2UJ8BoBnyeLYTqeB4zsz2jJMyxW6W7XehtcBykq6hsIcPc6iAT5hmfMqT3BouVaTytY0ucbAapzbN9nt2xlMZonCitkbtMlW9ueo9LWN90es8w79ym2x7IsEW2NvHW19ymA3yVkpfq/qDJn/ANqeNkttJZ7TS2yhiEVNTRiONo6h09551He03ap9r10kstlo4auuiA4+acnionEZhukEFxyyJ3jLMc+/LTpK6rr5SyEkDs007SuK1OO4vtBVmGhJa3gAbadbj6buACdL9nuB3tLThW0gHpbTNaflG9NPFGxPDtbC6SxTT2mpAJa0vdNC49ocS4eYjLqKZtNtnxhHO189NZ548+UwU72EjsOs5fIVMOz3F9DjGzGtponU9RC7i6mneczG7LPcfdNI3g/MQQvErK+iHSFxtzuO8FUaun2hwNoqHSnL1h2Yd4P3WVXcR2G54eu0tru1NxFTHvGRza9vQ9p6Wn/1yO5c8MVldvGHYLvgua5CNvhlrBnjflv4v/vG9xG/vaFXENzWw4fW++oc537iuk7O458LUYmIs4Gzh29nYfyUo7DsEYbxRZbjU3ygfUywVYjjLaiSPJuhpyyY4Z7z0qQvuQ7P/wCJZvz+o/bXD4M4yw5d/jw9W1PraBfpsNYUq7zT08dRJAWZRvcQDqcG8471r9dUVJrHRxvI1AAuQuc47iWJuxmSmppni7gAA4gagdthquF9yHZ//Es35/UftpPuQbP/AOJZfz+o/bTHO3C8j/3BQf8APf8A4LA7cryPyfoP+e//AAVT3rinzz/1fmrkYRtZ9K//ALv/ALJ9/cg2ffxJL+f1H7ahHbLh+1Ybxw62WandT0gpIpdBldIdTi7M5uJPQOlPA7db0Pyft/8Az3/4KPsd4kqcXYhdeaqlippDCyHi4nFwyaTvzPwlkMOgro5bzuJbbrv6rYtmqDHqasL697iyx3vza6W0uU3Q1ZhvJHeVkGra2N7mhkbS6Quya0dJOQAWcJW+F6mfZBs0w3e8FQXa/wBulqKmple6MipljAjB0t3McBvyJz7U8PuQbP8A+JZvz+o/bTqwtbWWfDdutcYybS0zIvOGjP0r0W6vgrvCeJcD4PO6B+/mc3LP51o0+IVD5HOY8gX6yuCV+0OJT1MssM7wy5sA4gAX00uqobQ7FHh/GtztNPG5lNDKHU4c4n9zc0ObvO85ZkZnqXA0FS/wkrVxOI7bdmMOVVTmF7ujUw5jz5OPyKKNC22in6anY877eK7FgVeazDoZibkgX5jQ+IXnDOtTtsu2b4OvmBrddLna5JqudrzI8VczAcnuA3NeANwHMFCQYrO7FBlsytA8WT1jlZY1NJHACxxBvw04FYLbiuqKagY+B5YcwFwSDax6l5vuQ4Ayy+ws35/UftpDshwBl/A0w7fD6j9te7afjCfB1to6uC3x1pqJzEWvlMYbySc8wD1JhfduuH8mqb89d+wsLC3EZ2Z2PJH1vzWkUMW0tdCJ4Jnlp/5lt3Ny79z2J4RqI8qKa5W945iyfjGnvDwTl3EKKcfbN75hJpq5CyvtueRq4Wlujq1s3lvfmR2jmUtYL2tWy9XCK3XSidaqmZ2iF/G8ZC9x5m6sgWk9GYyz3Z55KRaiGKogkgnjZLFI0texwzDgecEKo2vraKQNm1Hb6FXEe0ON4JUCOtu4dTtbjrDtfMjrCpcY1joTu2k4abhfF1VbYdXgjgJqUnnEbs+Tn4pBHcAvFgqxfbFiq32c6hFPL+7OHOI2jU7u3DLPtWzioYY+lvpa/cuqMxGF9L76B+JlzX7LXXZ2b7M7pi5orppfsdac8uPLM3zZHeI29XPyju6gd+UxWfZNga3xNbJajXyADVJWSukLu0tzDB5mhPakp4KSlipaaJkUMTAyNjBkGtAyAAUV7RdrjrPdJ7Rh6jp6qendonqagkxNf0ta1pBdlzE5gA7t+/LV3VlZXylsRsOzTTtK5VJjONbQ1RioyWt6gbAD+o8f92Cd1Ts4wLURmN+F7awHphi4p3ytyKY2Mth9BLBJUYVq5KWcDMUlS8vif2B55TT2kuHcm7b9teLIalr66itNXBnyo2RPice52pwHnBU3YPxDQYosMF4txeIpcw6N4yfG8bnNd2g+Y84USe/6Cz3ONudwvNSNodny2Z8hLSfnZm36iD93IqodfRVVBXT0NdTyU1VA8slikGTmO/8A7pG4jIjctGkqeuEhhuGW1U+J4I2tqKd7YKlwHs43HJpPc4j/AMxUGBq2aiqxVQiQd/NdQwPGG4rRtqGix3EdRG/7x2FTvs52Z4LvOB7TdLjapJquppw+V4rJmhzszvya8AeYJpbdcG4fwtHaXWKhfS+EulEpdPJJqyDcvZuOXOeZS/si3bNbCP5oPnKZHCaGqgsf9PL9ELAUtVM7EMheSLnS5txXPMJxatftF0L5nFmZ4ylxtYZraXtooI0ck94/Wu5s9tVHeMc2e13GIy0lTOWSsD3NLgGOPO0gjeBzFc3i+T5x+tObZOzLaXYT/OXeretjqHkQvI6j5LpeIzuZRzOabENdY9RylTX9x/Z9/Ekv5/UftquGM6Cmt2LLvQUcZjpqaskiiYXF2lodkBmcyfOrmKoG0Rv7/L98fm+kVg8CqZZZHCRxOnE3WibA4nWVVTK2olc8BotmcTx7Smu8LU4L0yBaXAk5AEk7gB0raAV1dpWgpPcnzKY8ObBrxX22Oru95htUsjQ4U4pjM9gPQ46mgHsGa6J4PRAP78B+jPrVafCVLe2fwP3LXpNs8EjeWOnFx1BxHtAIPcoJKFOZ4Ph/leP0b9asTwfiPyuH6N+tVZtZC7cfAqP02wP6f7L/AMKg5Cm87ACPyuH6N+tWJ2BEflaP0b9aqzXtduU/ppgn0/2X/hUJIU1nYKR+Vg/R31qxOwcj8qx+jvrVXbE924L1+mWC/TfZf+FQv0FIpXxBsTutFbpam13eK5Sxt1eDmnMT3gdDeU4E9hyUUkEEgggjcQehJInx/rCyy2H4rSYi0vpX5gN+8W7jYpEIQqayKEIQiISjmKRKOYoiRCEIiXPxQuzgM/v5w/uH8KU3rWrirtYD/DnD/lSm9a1EX1Hl++v+EVQzhte3vVbh/B1N9Eq+cv31/wAIqhnDa9veq8nU30SiKEs/FCsPwEL5W0u0+42Bjz4FcLa+aSPfkJIi0td35OcPkVd1OnAd9vNvkqq/6URXpliZNE+GQZskaWOHWCMivlhiCmjob/caKFo4unq5YmdzXkD5l9UmeyHevlpjH8L715QqPWORFcngIQRx7I7hMxuT5rvIXnryYwD0BOrhcVk9Fwf8Rvp3aTL4PA/tY+ZjXD5CmzwFfacqvK0v0WrvcMb8Xu/f09J/eI0RUAz8UJHnkncOZCR3sT3Ill9SMETyVWCrFUzO1SS26ne89ZMbc1Vv/SCsaL/g+XSNTqOpaT2B7MvnKs/s9/AHD3kum9U1Vi/0g38NYN+K1f040RQbsPP/AGxYS3D+FYfpL6WO9ke9fNLYd7cWEvKsP0l9LXeyPeiL548K78YPFm4ff4P7vEovz8UKT+FeQOEJizMgfu0H93iUZU8UtTOyCnjfNNIdLI42lznHqAG8lEUw8De71lt272qkptXE3KGemqGgnLTxZeCR2Fg+VX7acnAjrVWuB1sdvtivD8e4qoZrc/wd0Nuo526ZTr9lK9p3t3bgDkd53Kzd3uNJaLVV3avmZDSUcL55pHnINY0Ekk+ZEXza210sFDtcxXS02kxMu1QW5c3KeXH0kq3XAd9pI+VKj5mqlGK7s+/Ymul7k1h1fWTVJDzmRreXAeYHLzK6/Ad9pE+VKj5moi6XDL/F+vHxqk9c1UFzAGeQ3L6PcIDBl1x/stuGF7LPRw1tRNBIx9W9zIwGSBxzLWuPMOpQHs14LGKLZjm1XPFlwsE9oo5xPPDSTyvklLd7W5OjaMi4DPfzZoimbgvYE+0XZTRRVUPF3W65V1dmN7S4DRGfgtyHeStHCpx0cFbLaqOjmMd1vBNDSFp5TAR+6PHc3PzkKW+c5Ac6oDwpcdDG+1asbSSl9qs2qgo8jucWn91ePhPGXc0LyVTcowiyAADRkE8dkhaNpOHi8N0+FneevQ7L05JnRro2qsmt9wpLhTffqWZs0e/IEtIIHccslbTszxuaOII8Fi8QhM9PJEN7mke0EK6KqntDp56bHt8iqR+6eGPfmRztdymn5CFZvDN5osQWKku9BIHwVDA4dbT0tPUQcwe5NzaLs8tuL3MrBO6gucbNDaljNQe3oa9uY1AZ7siCOvoWmYbUtpJiJdL6clxDZfFI8GrXtqgQCMp01BB4jfzVbMvFCc2AMZVmDamsnpKKCq8KYxrmyPLQNJJBGXeV1b3soxhbiXU9NT3OIHc6mlAdl1lr8vkBKZlfR1dBU+DV9JU0k/Pxc8To3EdeTgMx2rZg+CqYWghwK6m2ooMWhMQc2Rp3gHv1G8KQrtthutytdVb5bFQtjqYXROImccg4EZ83ao0a3IAZA+ZZZJcl7hp4oARGLXVaiw6loGltMzKDv3+pU38G3dh67bgP9tHq2pw7b/a1uffF6xq4HBv/AAeu3x0eranjtJstbiDB1babeYRUzFmjjXFrdzwTmQD0DqWr1Lg3EcztwI9FynEpWRbS9I82Ae0k9miq24eK1an/AAQpIOx/GR6bT+dO/YWt2xzGZ6bR+dP/AGFsYr6b549q6a3aHDPp2+1Rs74LVj/VCkKs2QYypqWWpkNpMcTDI/KqcTkBmcuRzqPW5FoI5iM1cxTxzAmN17dSydHiFNWAmneHW32N1k0eK1OjZjbBdsdWekdHnG2p46TLobGNfzgDzptNClrg32zjr5crs9u6mgELD4zzmfQ0fKqNdL0VO93Z56Kxx+s96YdNLxAIHM6DxKnKV7Y4nyPOTWNLiewKLdgd6NyqMSRvcS6atNc0eLISP+kJ37ULibXgK7VLXaZHQGGM+M/kD51D+wuuFDj2GnLsmVlO+DLrcAHN+iflWs0lPno5Xf701K5bg+G9Pg1XLbXS39vxj4FSJt9tnh2BHVbWapKCoZMPgnkO9Ds/Mq8lvihW4xHb2XWwV9tkGbamnfF8oICqYWPaSyRul7SWuHURuIWSwOXNC5nUfNbRsHWZ6N8B/gN+4/mCtYb4rVZbYv7Wtp+DJ6xyrbkrJbGfa3tPwZPWOXrHD8nHP0K97eG+Hs+uPJybnCNGdgtO4H/bT6tyhQAe9CmvhGuY2wWkvcGg1pG85f8AduUK8dD/APFj/wDMFVwn91b3+autj7/BTObvMrF4Ok5biBuIzzBVrcKVctfhm2Vs/wB9npI5H95aCVXTCOEbtiiuigpKaaOjc4cdWOYRGxnSQTuc7qAz35Z5BWYo6eKkpIaWFumKFgjYOoAZBWGNysdlYDqPBa/t3VwvEULTd4JJ7Bpv5+ihnhJRMFyskw063QzMI6cgWEfOflXE2AMadogJaM20Ezhu6dTB8xK9G3y6x1+MYqGJwc23QaHkHmkedTh5gGrVwf8A2wneT5vpxq7Y0twyx+afFZiCN8Wy5a/fkce4kkeBVgZiWwvcOcNJCpxPI6WSWWTJz3yFziekkkkq41R/u8nwD8ypueZ3wv8AFW+AfzO71WO9zsC1Qfq/5LW478tIUgbJ9odFgy311HXW+tqmVM7ZYxT6MmnTkc9Thz5DmUfOWJWfmgZOwseNF0KuoIK+AwTi7T3btVL2OdrNlxHhSvs0VlucUlTGGsfLxWhrgQQTk4no6Aolb8FqwatjF4p6WOmaWxiwVHDsKpsMiMVMLAm+8nXv5K0myX2trF8VHzlMvhJjOhsm4H92l+iE9dk3tb2L4qPnK5m17CN2xZTW6O1SUbHU0j3P8IkcwZEADLS1y1SCRsdeXONhc+q5HQVEVNtCZZXWaHv1P9yrtp5J5I5x+tOTZWMtpFi3Af7QfVuTj+47i7LLwiy8/wDxMn+Wupg7Zbia0Ystl0q57SaelnEkginkc8jIjcDGB09az09dTuicA8ag+S6DX4/h0lJKxszblrhv6wVNKqLtD/Dm+8kf7/N9Iq3SqPtDH7+b78fm+kVjNn/2r+XqtX9zr96m+qPNNmXuC6GCGMkxzh+ORjXMddaVrgRzgzNzC8EnMujgX8PMO+VqX1zFtb/1DyXWqo/JpPqnyVxnFa3FDitb3biVrFPTr5oa1Ditbiolw7jbaVfrZU3e2WGwVVHTVD4nRCR8cr9O86c35cxTj+3kV2yyqxlbKVrJoYHu8HnzcGSNcAWnLIkdu7oWdhpS1Z+fAKqB4YbE5g02cDZx3A8RdPNxWtxUXHHOObVYqPEt+sFpnsc7Y3yPoZnCaJj8snEOJ6+b0jnTlx9ix1gtFBNbaNtfW3SdkFDG52lhc4Zhzj1bxu7ecLLwRADVenYJVMlZGLOzEgEEEXG8E8LbzfgnQ4rW4pj2XE+JaPF1LhrGFut0U1fE6SjqaCRxjcWjMsIcSc9x393Ono4rN0sQduVKpopKVwD7EEXBBuCN1weYIQXZHMc6qVjVrI8Z3yNjGta241AaAOYca5WxcVU7HH4a33ylU+tcoxeLJEzmt89z0WqJuQ81yM/FCM/FCRCwK6pZLn4oRn4oSIRLJc/FCUHceSFilHMUUIz8UISIRTZC7WA/w5w/5UpvWtXFXawH+HOH/KlN61qIvqPL99f8IqhnDa9veq8nU30Sr5y/fX/CKoZw2vb3qvJ1N9EoihFTpwHfbzb5Kqv+lQWp04Dvt5t8lVX/AEoivYz2Q718tMY/hfevKFR6xy+pbPZDvXy0xj+F968oVHrHIiubwFfacqvK0v0WrvcMb8Xu/f09J/eI1weAr7TlV5Wl+i1d7hjfi937+npP7xGiL5/pHexPclSO9ie5EX1D2e/gDh7yXTeqaqxf6Qb+GsG/Fav6cas7s9/AHD3kum9U1Vi/0g38NYN+K1f040RQZsO9uLCXlWH6S+lrvZHvXzS2He3FhLyrD9JfS13sj3oixLWk5ljSe0JWta05taGnrAyVKuEVtc2k4b20YjsljxdX0NupZYmwU8YYWsBhjccs2k85J86l7gfbUbnjvDtztGJbi+uvltlEomkAD5ad/MTkAOS4EdxCIpvulfQ2ugmuFzraeipIGl8s9RKI42DrLjuCp1wpdvVLi2klwVguZ7rNrHh1fkW+Flp3MYOfi8+cn2WXVz2X244Ji2gbM7th7Q01jo+PoXH3M7N7Pl9ie9fNqeKWCeSCeN0csTiyRjhkWuByIPaCiLHoCvTwHfaRPlSo+Zqot0BXp4DvtInypUfM1EU0Xu7Wqx259yvVyo7bRRkB9RVzNijaScgC5xAGZ3Ll2PHGC77cG2+yYusNzrHNLm09JcIpZCBzkNa4nco94Zn4v14+NUnrmqjuCMQ1uE8X2rElvcRU26pZO0D3QB5Te5zSR50RfT6sgbVUc9K9742zROjL2HJzQ4EZg9YzXzKxzhqswdjG6YZr2njrfUOiDiPZs52P87SD519LMPXaiv8AYaC922QSUdfTsqIXA+5cM/RzeZVk4dOB8/sZtCooebTQXHLq54Xnz5t87epQVTcqtxL1MO4edeSNelnsR3lUXK0kCeWzvHF1wdWuNMBU0Ezs6ike7IOPvmn3Lu3mPSOYieMNbSsI3uNgbc2UFQ7LOnrSInA9QJOl39UlVdjK9DN/PvWJrMMhqTmOh6x6rT8a2WosTf0rgWv6xx5jj4HtVymOa9oc1wc0jMEHMFeO82m23mhfRXSihq6d3OyRueR6wecHtG9VVst5u9mcHWm51lCAc9MMpawntZ7E+cFTpsdx1UYngntt24v7J0rQ8SMGkTxndqy6HA7jlu3gjLPIYCqwuWlb0rXXA7iFzvFtk6vCmGqikzNbxGjh2/8AwqM9qWBJsJVjKqjfJUWmoeWxvdvfC7n0OPSOp3Zkd+8ssBWsxpaYr5ha42yVoPHQO0HL2Lxva7zEAqqTCS0EjI9IWZwurdUxEP3hbvsnjMmJUhExu9hsT1g7jz3+y6nDg4fg/dvjo9W1SVdbjRWqhkrrjUx01NHlrkecmtzOQ9JUacG9wNhu7ekVjT/+NqcO272tbn3xesasHWRiSvLDxIHktCxmmbU7QOgcbBzmj22C6LMeYMe3UMTWsDxqgN+dBx3gwc+KLR+dM/xVXXLS5ZT4Ch+cfBbaNgKM/wA13h9ys5e8c4Nls9bFHie0vkfTyNa1tU0kktOQG9VciGUbQRlk0LNyAslRULKQENN7rZMDwGHB2PbE4uzW324X6uazYFYvYFbfAcBMqnNIkr53znP3o5LfQ3PzqukbXyOEcQ1SPIawdZO4D5Vb7DtvZarDQW2MZNpqdkQ8zQFjsdlyxNZ1nyWvbf1fR0ccA3vN+4fmQo84RFw4qxW61tdk6pqDK8dbWD9pzVEeHK42zEFuuIdp8HqY3uPi6hq9BKsJjTAtqxXWwVVyqq+N0EZjY2B7GtyJzJ3tO/m+RcF2xvDDmlprrwQRkf3aP/LVrRV9NDTiN9763061icEx/DKPDm00pNzfNp1/lZSO0hzQ4HMEZhVh2lW37FY6u1KGlsbpzPH8GTlfOSPMrNUkIp6WKna97xEwMDnnNxyGWZ7VCvCJt3E3y2XZreTUQOgefGYcx6HH5Fb4NLkqC3rH5rG7E1QhxExX0eCO8ajwBUXKyGxr2t7V8GT1jlW4FWR2Ne1vafgyescsljf7Ac/QrZtu/wDT2fXHk5O8gHnAPek0M9635FHm3O83WzWa2zWqvmo5JKsse6PLNzdDjkcwekBMTAe0C+QYsoW3m8VFVQTv4mVkuWTdW5r9w6Dl5iVh4cNlmh6VpHHTjotLotmaqsojWROFtdNb6d1uSn9MDaNtIt9hpZaG0Sw113PJDWnVHTn3zyOke9G87uYb0/yA5pBAIIyI61V/aJYPtZxXV22OPRSuPHUuQ3cU7mA+Cc2+YL1hVNFPKRJw1t1qrsnhlJiFWW1B/VFw3geu/LTTiuDUSyzzSTzyOllleXySOOZc47yT50++D+f+0J3k+b6caj8lP7g/HPaGfJ83041slcPkz+S6djzbYXOB80qwVR/u8nwD8yps73Xwv8Vcmo/3eT4B+ZU3dzO+GsXgH8zu9Vqnud7qj+3/ACWp3+KwPOVm7nWHatlC6cFk3nW1i1BbGlQV5crS7Jva3sXxUfOV2rtebRaBGbrdKKgEufF+ETtj15c+WojPnXF2S+1vYvio+cpk8JFp4ixyZ7hJM30N/wAFpDYBPWmMm1yfVcKioGYhjb6Z5sHPfqOy59FIP25YR5/tosv59H/it1FinDNbVx0lHiG1VNRKco4oquNz3nLPIAHM7gVVbVyfOP1px7LTntGsXxg+rcsnLgsbI3ODjoCVs9XsPTQU8kokddrSeHAXVnVUfaH+HN9+PzfSKtwqjbQz+/m+/H5vpFU9n/2r+XqqPud/vU31R5ptycy6GBvw7w95VpfXMXOlO5dHA/4dYe8q0vrmLbCPildZqf3aT6p8lb95Wp53HuSuO5a3HnVlT06+b2tUF7KaTHlZhivhw5dbPQ2+SvmY988TnTtcctRbuI5ssk7sRYep8K7ELtZaaZ84ipHuklcMjI9zgXOy6B1BOfB+G6DCtrlt1ulqZYpah07jO5rnanZZjc0bty9GIrZT3uyVloq3ysgq4zHI6IgOA7CQR6FnIoCVt1Zjgnrw9thFna7QAE2O88SQL25qFp4MS1dvwhhzEl8iiw3eIogx1NTgOGkAsie45bzu3+fI5J47XGMhuGCYmN0Rx3iNjR1AaQAnDe8H2q64Uo8O1MlW2CiEXg88b2iZhjGQdnpyzy59y3Ypw9bsR2dtsunHSNYWvjnY/TKx4GQeCBlq82XYslFSOLSB2K5OMwSTwykWDS+4AAHxtA7TeSCAfq9qbWNzntjwUOkMqSR1DIp8uKa+HME22y3d13fX3S7XDi+KjnuFRxromnnDdw9Kcjis7Q0rhcuG8+gCxdfLE8RRxG4Y217Wucznbu+yHFVSxv8AhpffKVR61ytS4qquNvwzvnlKo9a5W+0UeSGPn6LctgBaom5DzXIQhC1FdRQhCERCUcxSJRzFESIQhEQu1gP8OcP+VKb1rVxV2sB/hzh/ypTetaiL6jy/fX/CKoZw2vb3qvJ1N9Eq+cv31/wio7x3sZ2eY4xA+/Yls09XcHxsiMjK2WIaWjIDS1wCIvnErRcA7Bde++3LHtTDJFQRU7qGje5uQnkcQZC3rDQ0DMdJIUzWzg7bH6CsjqmYSFQ+M5tbU1s8sefawv0u7iCFKVHTU9HSQ0dHTxU9PC0MihhYGMY0cwa0bgO5EWu6VsNttlXcah7WQ0sD5nuPMA1pJ+ZfLK61ZuF0q68jSameSYjq1OLv1q3fDJ2vUNFY6nZzh6rZPcKwBt2lidm2ni5+Jz9+7pHQO0qnaIrr8AutZPstu9EMhJS3ZxO/eQ+NpB+UEeZPzhRWWrv2wrEtFQsdJPFFHVBjG6nOEUjZCAB05NKqpwSNpNLgLaBJQ3mo4iy3pjaeaR2emCUH9zkPU3MlpPUQeYK+3Jc33L2uHeHA/OCiL5QrZT081XURUtNE6WeZ4jijaMy9zjkAO0kq82NeC5s7xBd5bnQVF0sD5nF0kFE5joNROZLWPaS3uBy6guxss4PeA8A3mO9weHXi6QnOCeve0tgPvmMa0AO7TmR0ZIikrCtDLbMLWm3T/fqWihhk+E1gB9IVUP8ASBVcUmKsKUTXAyw0M8jx0gPkaB9Eq3F1uFDabXVXS51UVJRUkTpqieV2TY2AZkkr5xbdMcO2hbS7liRge2jcRBRMcMi2Bm5mfad7v6yItOw724sJeVYfpL6Wu9ke9fNLYd7cWEvKsP0l9LXeyPeiL548K78YTFn9PB/d4lytgeNXYC2p2i+vfponSeDVwzyBgkyDie7c7+qurwrvxhMWf08H93iUXIi+rzHte1skbw9jgHNc07iDvBColwysB/aptNdfaGDRa8QA1LdLcmsqB99buGQzJDv6xVjuCRjc4x2SUlNVTGS5WQihqS45ucwDOJ/bm3dn1tK7PCOwK3H+yu422CIPuVGPDbeenjWA5t/rNzb5wiL50dAV6eA77SJ8qVHzNVFnAjc4FpGYII3gq9PAd9pE+VKj5moi6XDM/F+vHxqk9c1UFV+uGZ+L9ePjVJ65qoKiK43AXxybjhm4YFrpiai1u8JotR3ugeeU0b/cu39zgp7xxh2ixZhK6YbuDQae4U7oSfeOI5Lh2g5HzL51bIMYT4D2iWjE0TncVTTBtUxp++QO3SN7dxz7wF9KqWogq6SGrpZBLBPG2SJ45nNcMwfkKgrw5fMK92utsV9rrLcYzFWUNQ+nmaRlymnLPuPOOwhO/Yzh6zYpxVJar0JjH4K+WIRSlhLmub0jsPMpS4b+B/sdiahx1Qw6ae6AU1dpG4TsHIefhMGWZ94FBuDL7PhvElBeqdpeaaTN8YOXGMIyc3zgnz5K0qmPfE4RmxtpzWJxaGaakkZTus8g5SNNeGqsFNsZwaIJOIhrxJpOgmrdlnluVe3xT0s8lNVMMdRC8xysPuXtORHyhW9sF3t99tFPdbXUMqKWdupj29HWCOgg7iDzFNvGezbDWKKp1bUxT0Vc/LXU0jg1z8vfAgtcchlmRnl0rVaHFXwvcypJPouR4DtbNRTPixJznA9epaRv0Pjx03KtDSpI4PVNPNjmaqjaeJp6J7ZXdAL3N0jz6SfMnTBsOsrZQZr7dHx5+xY2NpPn0n5lImGMPWjDdu8As9I2niLtTzmXPkd75zjvJ/8ARXFdi0D4SyPUlZPH9r6GeifBTXc54tusAOO/wXQqpGxU0sryA1jC5xPQAFT3jRI50g5nkuHn3qfNumMqez2KSwUc7XXOvj0va074YTuc49RIzA856FXzVuyVTA6dzInSO/i3dyuNg8PlhpZKh4sHkW5C+vffwU6cGw52a8/GmfQTk23nLZpc++L1jU2ODOc7NevjbPoKScUWSjxFZJ7RXulbTzadZicGu3EEZHI9IWMrHiPEC924Eei1TGZ2U20Zlfua9pPIBpVSi5anFWF+4xhH/iLt+cN/ZWJ2LYRP/tF2/OG/srM/DVL2+xbuNuMKHF3s/NV5J3ozVhfuKYQ/4i7/AJw39lRDtXw/QYVxg60W19Q+nFNHNnM8Odm4uB3gDdyVc02IwVL8kd7rKYXtLQ4nN0EF81r6iyNldt+y20C0UpbqjZP4RJ2NjGr5w35ValQRwZ7bx16ut4ezk08LaeN3jPOp3oa35VMOMrkLPhS6XM89PSyPb2u0nIfLksDjLzLVCMcLDvK5/ttM6rxZtMz+EAd7tfUKM7htskp7hVU8GG4pooZnxskNeW6w1xAdlxZyzyz5ytP3can+S0P6RP8AlKF436WgFxJA3kneVnxm5Zv4IpB/B4n71vA2OwgCxhv/AHO/ErQbM8ZjGVvrKh1A2hlpphG6MT8ZmC0EOz0t7RzdC523m3eG4BlqmtzkoZmTjsbnpd6HH5FH3ByufEYvrLa48mspdTd/uoz/AIOPyKccQUEd1sddbZRmyqp3xH+s0ha/UsbRVoLRYCx7uPqueYpTswPHGmIWYC1w5cd+vWFUjWrK7Fzns1tJ8WT1jlWN/GROdFMNMkZLHjqcDkR8qs1sUOezO0HxZPWOWWx0fJxz9Ctu29bbDmH+seTk3eEgcsP2g/z0+rcoQLs25HmIU18Jd2nDto+PH1blBXGKtg4+St7/ADV7sYy+Exntd5lWi2UYh+2PBlLUSyB1XT/7PU79+to5z3jI+dcPb3h77J4WbeKePOqthL3ZDe6E+zHm3O8xUebA8R/YrGH2KneRTXRvFjPmbM3MtPnGY78lYiaOOaF8MrQ+N7S1zTzEHnCwlUx1BWZ27t45cR6LRcWhfs/jQliHxb5hyO8eYVONefSn7sCqGRbR4mvORmo5o29pza75mlNXHVjkwxiuuszwRHE/XTuPuonb2H9Xe0rw2K61FmvVHdqQAzUkolaCcg7oLT3gkedbPKwVEBDP4hp3rqtZA3EsPe2E6SNNjzGiuFK3XG5nvgQqd3OlmoLhV0NQ0smp53RPBGW8Ej/9q2mGb3QYistPdrbMJIJm55Z72O6WuHQQdxCb+ONnGH8V1HhtQJ6KuyAdUUpALwOYOBBB78s+1azhlY2jkc2UWB8CFyzZfGmYJUSxVbSA6wOmoIvvHeVWEqYNg2DrPerBX3K+WmCsY6p4umdM3PktaNRH9YkeZdi37DbHFUiSuvNxq4g7PimBsQcOokAn5CFKFtoaO20ENBQU8dNTQNDI4oxk1oV7iOLRviyQE3PHcs5tLthTz0vQULjmJF3atsB1bjc+SjXavhHB9jwDc7hSWKipqlrWshkYzJzXueAMt/aoBDlKvCFxjBcayHDFumEkNJJxlZIw5gyjcI+3TmSe3IdBUS6lkcKjlbTgykknXXqWzbI09VHhwfVOJc8ki5JIGlt/K/erWbJPa2sXxUfOUyuEs7Khsn9NL9EJ6bITns0sJ/mg+cpjcJx2mgsf9PL9ELBUf+pd7vVc/wAHF9prf1v/AMlDfGcnzj9acmyl2e0mxD+cH1b00dfJPeP1py7J5ANpdgzO7woj5Y3LZ6lv/BfyPkurYnH8hn+o7/xKtYqh7RD+/q+j+fzfSKt4qf7RXfv8v3lCb6RWA2e/av5eq557nAvVzfVHmm/KV78FyMjxrYZJHBrG3Omc4nmAErVzJHLS4kHMEgjeCOhbcAuvvi6SNzOsEe1XVecs+tanFQHYdt93ordHS3W0Q3OWNoaKgVBhe8DpcNLgT2jLNe47eHHf9qg/SP1SrQtY3euLv2Jxhji0RAjrDm6+0g+0KanFa3FQsdu7v5Kj9I/VLE7dSfyVH6Q+qWVhmgbvd4FehsZjP0P2m/iUzuK1uKho7cnH8lh+kPq1iduDj+S4/SH1aysNfRt3v8D9yqDY7GPoftN/EpjcVrcVDx23E/kwPz/6tYnbYT+TI/P/AKtZSHGMPbvk8Hfcqg2Qxf6H7TfxKXyczkFVfGL2yYvvUjHBzXXCoII6QZHJ83zbBc6ygkp7ba4rfK8aePM5lc0HpbyWgHt3qMiSSSSSTzkrEbQ4pTVbWRwG9tSbW81u2yWB1WHGSSpFibAC4PfpokQhC1dbshCEIiEo5ikSjmKIkQhCIhe2w1/2LvlvunFcd4HVRVHF6tOvQ8O055HLPLLPIrx5+KEZ+KERWudwyHOcXHZwN5z/AIb+oSf647v/AJcD9N/UKqWfihGfihEVrH8MaTSdGzpgd0F16JHqAo82g8JfaPimmmoaCalw5Qy5tc23Bwnc0jLIzOJcO9ulQtn4oRn4oREsjnPdre4uc7eSTmSczvKxWRO4ckc3b1pM/FCKEimTZHwiMa4CoorRUtixDZoRpipqyQtkhHVHKMyB2EOA6MlDmfihGfihFKuhb+F5geSnY6vwxiSnmI5TIBBM0HscXsJ+QLReeF9hOKlcbNhK+VdR7ltXJFAzzlrnn0Km2fihGfihEUkbX9tGM9pZ8FutRFQ2hj9cdtowWxZg7nPJOcjh27h0AKNzzBGfihKSMhyQihdfA98OGcYWnEIpfC/sdVsqOI4zRxmk56dWRy78irLHhjuJz+5wP039Qqo5+KEZ+KEUpz7VsXHHe0G7YtNv+xxuL2P8G47jeL0xtZ7LS3PPTnzDnTXS5+KEZ+KERSHsH2p12yrE1Vdae3C6UtZTcRUUZqOJDyDmx2rS7ItOfR0lTWOGQ4EEbORmP/rf1Cqjn4oRn4oRF2cc3iixBi653y3WkWimrqh07aMT8aIS7e4B2luYLszzDLPJS1sO4QjtmWCThr7UBdh4VJUcf9kuI9llu08U7my581BpIyHJCTPxQihT5tl4R7touz+swn9pgtYqZYpPCfspx2ni3h2Wnim555Zc6gMcyM/FCUHxQilAVhNlPCbr8F4Et2F63CovRt7TFDVG5cQeKzJawt4p3sQcs8+YBV8z7AlB8UelQvJVhtp/CQpce4GuOF67Z82BtWwcVUfZjWYJWnNkgbxAzyI5sxmMwoFYeSF52uHvR6VsDuSOSOnrXghUXBObBuL79hSqdNZq3i2POctPI3XDKfGb19oIO7nyUsWjb1TmMC8YdnY8c76OZrwe3S/Tl3ZlQK1496PSsxIOoelWFTh1PUG8jdevctexPZvDsSdnqIru6xofDf33ViH7d8M6eRZr4XdRZCB6xNbE+2+9VsT6ex2+G1tcCOPkfx0uXWBkGtPfqURCQe9HpRxg9630q3jwelYb5b81j6bYvCYH5xFmPaSR7L2PevZVVc1VVS1NTNJPPK7VJLI4uc89ZJ51r4ztXn4wdQ9KOMHUPSskG2WzCIAWAUh7Mdov2lUNbT/Yjw/wqYSavCeK05Nyyy0nNO/7vY/kr/aH1ag7jBpHJHOevs7Uax70elWMuF00zy97bk9p+9YGr2VwusmdPPFdzt5zOHZwNlOP3ex/JT+0Pq0h2+D+Sn9ofVqD+MHvW+lIZB1D0qn8DUfzPE/erf8AQnBfoPtO/Epx+75/4U/tH6tRptExScX4mdefAfAc4GQiLjuM9jmc89I99zZdCbBk7B8pSGQdQ9KrwYdT07s8bbHmfvV/h+zeHYdL01NHlda17uOneSFJWzTabFguxS21uHxWSS1DpnzeGcXqzAAGnQeYDLnXp2gbW5sU4ZmskVjFA2d7eMm8M4w6WuDstOgc+XWorMg6h6UvGDT7Ec/ahw6nMvTFvxr33n70ds1hrqv346K8l73u7eOy9vCy36yl4wry8Z2D0peM3cw9KvMqzXRrvYRv02HMS0V7hhE7qV5cYi/QJAWlpGeRy5+oqVvu+f8AhT+0Pq1BfGDqHpS8Z2D0q0qMPgqHB0jbnmfRYfEdncPxKQSVUeZwFr3I07iF1r9cIrlfK64wUvgjKqd8whD9ejUcyM8hnvJ6BzqQsD7X/tawxSWQ4e8K8GDgJvDdGrNxd7Hizlz9ZUT8YPej0o4zsHpXuajinYGSC4HNVq3BaSugbBUMzNbawueAsNQb7utSLtP2kfbrbaKkFm8A8GqDLq8K43VyS3LLQ3LnTC1lefjBp9iOftSGTsHpXuGnZAzJGLBVqHDYKGEQU7crRwuTv5kleuGolhnjnheWSxPbJG8e5c05g+YhTLT7e5BAxs2FmukDQHObcMgT15cXu7lB/Gdg9KOM7B6VTqKKGpt0rb25+ioYlgVFieX31Hmy7tSN+/cQn1tQxzT41noqltk+x9TTBzHSiq4zjGHfpI0N5jvzz6+tM3WV5xIOoelLxg96PSqsUDIWBjBYBXNHQQ0ULYIBZo3C5PbxJKcWEsWXzCta6ps1ZxQfvlgkbqil+E3r7QQe1StaNvNKYgLxh6pY8bi6jmbIHdul+nLuzKggSdg9KXjBp5hz9qt6jD6eoN5G69ax2JbOYfiTs9RHd3WND4b++6sJNt4w4IyYbJenv6A9sLR8okPzJj4z2xYjvdPJR22FllpXgtc6GQvncPh5DT5hn2qMuMHUPlKOMHUPSqUOE0sTswbc9uqtaPY/CqSQSNiuR1knwOngtmeSNXatXGDqHpScZ4o9KyVls2RS7g7bL9r2GKCynDnhPgcQj43w7Rr3nflxZy+VcHajtEON4KGH7EC3ike5+rwnjdeoZZZaG5cyj/jPFHpScZ4o9Ks2YdTsl6Vrfjczx71hYNmsNgqvfccVpLk3u7ed+l7cepenXyT3j9a6OFrx9gsS2+8in8J8DmEvFa9GvcRlnkcufqXG4waTuHOOvtWPGdg9Ku3RhwLTuKy8lO2Vjo3i4IseR3qdDwgB/JP+0fqlDWI7mbvfq+6mHiDWVD5uK16tGo55Z5DPvyC5xf4o9KxLx70elW9NQQUxJiba/afVY/DNn6DDHufSx5SdDqT5koc5anFZOcPej0rAke9HpV8As60LEpPcnzJSfFCMxpPJHpUr2sEJc/FCM/FClekiEufihGfihESIS5+KEZ+KERHQUiyBGR5ISZ+KEUJEJc/FCM/FCKUiEufihGfihESJRzFGfihKDuPJCKFihLn4oQilIhCERCEIREIQhESnmHckSnmHckREIQhEQhCERCU8wSJTzBESIQhEQhCERCEIREvQEiXoCREQgIQiLJASBKiLIFZg8kedallnyR51C8ELaHLIOWgFKHKLLyWrfrRrWnUk1KLKMq360a1o1I1JZMi9GvkjvP6kmvtWku5I7z+pGpLKMi3a0a1p1I1JZMi3akhctWpJqSynKtpcjVyfOtWaM+SO9TZTlWzUjWtWaTPtSynKt2tGtatXajNLKMq3a0a1q1JNSWTKt2vk+dJqWvPk+dJmlkyrbqRqWrNGpLKcq3a+1Gpacyl1JZRlW7Wl1cnzrRqS6uT51FlGVbtaQuWnUjUlkyraXJC5a9STNTZTlW3Uk1LXmjNLKcq26uSe8frSalhnyT3hY59qWQNWwuWJcsc0ZqbKbJSViShCL0AhB9ifMkKPcnzKVKRCEIiEIQiIQhCIl6CkS9BSIiEIQiIQhCIhKOYpEo5iiJEIQiIQhCIhCEIiEIQiJTzDuSIQiIQhCIhCEIiEp5ghCIkQhCIhCEIiEIQiJegJEIREIQhEQlHMhCIlS+5HeUIUKCkSoQpUIQUIREBIedCFCLL3A8/6kiEKUQhCERBQEIQokPOl9wO9CFCJEIQoRCToQhSpSoQhQoS+486RCFKIQhCIjpKEIREvQl9z50IUokSHnQhEQgoQoRCEIUIl9ye9IhClEIQhApCEIQpUrFL7k+ZCERIhCERCEIREIQhES9BSIQiIQhCIhCEIiEo5ihCIkQhCIv/Z" }
-  ]
-};
-</script>
-<!-- ============================================================ -->
-
-<!-- TOOLTIP -->
-<div id="tooltip"></div>
-
-<!-- HEADER -->
-<header class="site-header">
-  <div class="header-inner">
-    <div class="site-title" id="hdr-title"></div>
-    <div class="header-tagline" id="hdr-tagline"></div>
-    <div class="header-stats" id="hdr-stats"></div>
+    <div class="sim" role="group" aria-label="Simulación interactiva de oxidación de Cu(111)">
+      <div class="sim-head">
+        <span class="t">Cu(111) · GCMC en vivo</span>
+        <span class="live"><i></i>T = 500 K</span>
+      </div>
+      <label for="dmu">Potencial químico de oxígeno <output id="dmuOut">−1,80 eV</output></label>
+      <input type="range" id="dmu" min="-2.20" max="-1.05" step="0.01" value="-1.80" aria-label="Potencial químico del oxígeno en electronvoltios">
+      <div class="scale"><span>reductor</span><span>Δμ<sub>O</sub></span><span>oxidante</span></div>
+      <div class="reads">
+        <div class="read"><div class="k">Cobertura θ<sub>O</sub></div><div class="v ox" id="covOut">0,00 ML</div></div>
+        <div class="read"><div class="k">log₁₀ p(O₂)/p₀</div><div class="v" id="pOut">−26,1</div></div>
+        <div class="phase"><span class="dot" id="phDot"></span>
+          <span class="name" id="phName">Cu(111) metálico limpio<small id="phSub">superficie sin oxidar</small></span>
+        </div>
+      </div>
+      <p class="sim-foot">Mueve el control para desplazar el equilibrio. Los átomos de O (rojo) se adsorben y nuclean unidades Cu₃O₄ igual que en los diagramas de fases del flujo DFT–GCMC–MACE.</p>
+    </div>
   </div>
 </header>
 
-<!-- NAV -->
-<nav>
-  <a href="#" onclick="scrollToCanvas()">Home</a>
-  <a href="#buy-pixels" onclick="openBuyFlow()">Buy Pixels</a>
-  <a href="#how-it-works">How It Works</a>
-  <a href="#advertisers">Advertisers</a>
-  <a href="#" onclick="scrollToCanvas()">Pixel Map</a>
-  <a id="nav-contact" href="#">Contact</a>
-</nav>
-
-<!-- BUY BAR -->
-<div class="buy-bar">
-  <div class="buy-bar-text">
-    🟩 <strong id="bar-free"></strong> pixels still available — 
-    Only <strong id="bar-taken"></strong> sold so far!
+<!-- ============ STRIP ============ -->
+<div class="strip" aria-hidden="true">
+  <div class="strip-track" id="stripTrack">
+    <span>≈ <b>5.400</b> estructuras candidatas generadas</span>
+    <span><b>98,8 %</b> de ahorro por estructura evaluada</span>
+    <span>de <b>2.300 €</b> a <b>28,31 €</b> por estructura</span>
+    <span>de <b>semanas</b> a <b>horas</b> por candidato</span>
+    <span>diagramas de fases <b>Cu(100)</b> · <b>Cu(111)</b> validados frente a la literatura</span>
   </div>
-  <button class="btn-buy-now" onclick="openBuyFlow()">▶ BUY PIXELS NOW</button>
 </div>
 
-<!-- HOW IT WORKS -->
-<section class="how-section" id="how-it-works">
-  <div class="how-inner">
-    <div class="how-step">
-      <div class="step-num">01</div>
-      <div class="step-title">Select your pixels</div>
-      <div class="step-desc">Click and drag on the pixel map to choose your desired area. Minimum 10×10 pixels ($1). Larger = more visible!</div>
+<!-- ============ METODOLOGÍA ============ -->
+<section id="metodologia">
+  <div class="reveal">
+    <div class="sec-eyebrow">Metodología</div>
+    <h2>Tres motores, un solo flujo de trabajo.</h2>
+    <p class="sec-sub">No proponemos estructuras a mano: dejamos que emerjan del equilibrio termodinámico. El muestreo estocástico explora el espacio composicional, la IA evalúa cada configuración en milisegundos y la mecánica cuántica garantiza la precisión de referencia.</p>
+  </div>
+  <div class="meth">
+    <article class="mcard reveal">
+      <div class="tag">Mecánica cuántica</div>
+      <h3>DFT</h3>
+      <p>Teoría del Funcional de la Densidad como método ab initio de referencia. Valida las energías del modelo y ancla los potenciales químicos de los reservorios de Cu y O₂.</p>
+      <div class="formula">μ_O = ½ E(O₂, DFT) + Δμ_O</div>
+    </article>
+    <article class="mcard reveal" style="transition-delay:.1s">
+      <div class="tag">Mecánica estadística</div>
+      <h3>GCMC</h3>
+      <p>Monte Carlo Gran Canónico: la superficie intercambia átomos con el entorno a T y μ fijos. La composición no se impone — emerge del equilibrio con la atmósfera de reacción.</p>
+      <div class="formula">P(C) ∝ exp[−(E − μN)/k_BT]</div>
+    </article>
+    <article class="mcard reveal" style="transition-delay:.2s">
+      <div class="tag">Inteligencia artificial</div>
+      <h3>MACE</h3>
+      <p>Red neuronal de grafos equivariante (Message Passing Atomic Cluster Expansion) con precisión casi ab initio y un coste varios órdenes de magnitud inferior al DFT.</p>
+      <div class="formula">error ≈ 1–5 meV/átomo vs. DFT</div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ PROCESO ============ -->
+<section id="proceso">
+  <div class="reveal">
+    <div class="sec-eyebrow">Proceso</div>
+    <h2>De la reacción objetivo al informe técnico.</h2>
+    <p class="sec-sub">Un proyecto CatScreen Pro estándar se completa en 7–10 semanas, con entregables compatibles con tu flujo de I+D: diagramas de fases, ranking de candidatos y ficheros CIF / POSCAR / JSON.</p>
+  </div>
+  <div class="flow reveal">
+    <div class="step"><div class="n">01</div><h4>Briefing y alcance</h4><p>Reacción objetivo, familia de candidatos, condiciones de T y p, criterios de éxito.</p><div class="d">1 semana</div></div>
+    <div class="step"><div class="n">02</div><h4>Configuración</h4><p>Construcción de slabs, parametrización GCMC y selección o entrenamiento de potenciales MACE.</p><div class="d">1–2 semanas</div></div>
+    <div class="step"><div class="n">03</div><h4>Producción HPC</h4><p>Simulaciones GCMC y validación DFT en supercomputación, con control de errores y trazabilidad.</p><div class="d">3–5 semanas</div></div>
+    <div class="step"><div class="n">04</div><h4>Análisis</h4><p>Diagramas de fases superficiales, energías de adsorción y ranking de los mejores candidatos.</p><div class="d">1 semana</div></div>
+    <div class="step"><div class="n">05</div><h4>Entrega</h4><p>Informe técnico, estructuras en formato abierto y sesión de presentación de resultados.</p><div class="d">1 semana</div></div>
+  </div>
+</section>
+
+<!-- ============ SERVICIOS ============ -->
+<section id="servicios">
+  <div class="reveal">
+    <div class="sec-eyebrow">Servicios</div>
+    <h2>Tres líneas, una misma plataforma.</h2>
+    <p class="sec-sub">Desde proyectos llave en mano hasta co-desarrollo de potenciales propietarios para tus familias de materiales.</p>
+  </div>
+  <div class="tiers">
+    <article class="tier reveal">
+      <div class="line-name">Línea 1 · Proyecto</div>
+      <h3>CatScreen Pro</h3>
+      <p class="for">Para equipos que quieren un cribado llave en mano de una reacción concreta.</p>
+      <div class="price">desde 6.500 €</div>
+      <div class="per">por proyecto · hasta 15 estructuras</div>
+      <ul>
+        <li>Flujo GCMC + MACE acoplado a validación DFT</li>
+        <li>Barrido de T y presiones parciales relevantes</li>
+        <li>Informe con los candidatos más prometedores</li>
+        <li>Tramos Standard (12.000 €) y Advanced (21.000 €)</li>
+      </ul>
+      <a class="btn ghost" href="#contacto">Pedir propuesta</a>
+    </article>
+    <article class="tier featured reveal" style="transition-delay:.1s">
+      <div class="pill">Más demandado</div>
+      <div class="line-name">Línea 2 · Suscripción</div>
+      <h3>CatScreen Cloud</h3>
+      <p class="for">Para equipos de I+D que quieren lanzar sus propias simulaciones de forma autónoma.</p>
+      <div class="price">desde 18.000 €</div>
+      <div class="per">al año · incluye 200 h GPU</div>
+      <ul>
+        <li>Acceso por API y entorno web al motor de cálculo</li>
+        <li>Potenciales MACE preentrenados y flujos parametrizados</li>
+        <li>Soporte técnico dedicado vía ticketing</li>
+        <li>Plan Pro: 48.000 €/año con 1.000 h GPU</li>
+      </ul>
+      <a class="btn solid" href="#contacto">Empezar ahora</a>
+    </article>
+    <article class="tier reveal" style="transition-delay:.2s">
+      <div class="line-name">Línea 3 · Co-desarrollo</div>
+      <h3>CatScreen Lab</h3>
+      <p class="for">Para clientes estratégicos: potenciales MACE a medida para familias de materiales propietarias.</p>
+      <div class="price">60.000 €</div>
+      <div class="per">set-up + royalty sobre ventas</div>
+      <ul>
+        <li>Potenciales entrenados sobre tus sistemas</li>
+        <li>Flujos completos para una reacción específica</li>
+        <li>Acuerdos marco con SLA y reporting periódico</li>
+        <li>Licencias flexibles para usos académicos</li>
+      </ul>
+      <a class="btn ghost" href="#contacto">Hablar con el equipo</a>
+    </article>
+  </div>
+</section>
+
+<!-- ============ AHORRO ============ -->
+<section id="ahorro">
+  <div class="ahorro-inner">
+    <div class="reveal">
+      <div class="sec-eyebrow">El número que lo cambia todo</div>
+      <h2>Misma estructura caracterizada. Dos órdenes de magnitud menos.</h2>
+      <p class="sec-sub">Comparativa con unidad funcional idéntica — una estructura Cu/Oₓ caracterizada a T = 500 K y μ(O) dado — y tarifas oficiales CCiTUB 2026 para la ruta experimental.</p>
     </div>
-    <div class="how-step">
-      <div class="step-num">02</div>
-      <div class="step-title">Make your payment</div>
-      <div class="step-desc">Pay via PayPal, Bitcoin, Ethereum or USDT. Price is $0.01 per pixel.</div>
+    <div class="duel reveal" id="duel">
+      <div class="route exp">
+        <div class="rt">Ruta experimental</div>
+        <div class="big"><span data-count="2300" data-dec="0">0</span> €</div>
+        <div class="unit">por estructura caracterizada</div>
+        <div class="bar"><i data-w="100%"></i></div>
+        <div class="tm">12–18 días efectivos · síntesis + XRD + SEM/TEM + XPS + test catalítico</div>
+      </div>
+      <div class="vs">
+        <div class="pct">
+          <div class="num"><span data-count="98.8" data-dec="1">0</span>%</div>
+          <div class="lab">de ahorro</div>
+        </div>
+      </div>
+      <div class="route comp">
+        <div class="rt">Ruta computacional CatScreen</div>
+        <div class="big"><span data-count="28.31" data-dec="2">0</span> €</div>
+        <div class="unit">por estructura caracterizada</div>
+        <div class="bar"><i data-w="1.5%"></i></div>
+        <div class="tm">0,5–6 horas · GCMC + MACE + validación DFT puntual</div>
+      </div>
     </div>
-    <div class="how-step">
-      <div class="step-num">03</div>
-      <div class="step-title">Send your ad</div>
-      <div class="step-desc">Email us your image, URL and the pixel coordinates you selected. We'll publish it within 24 hours.</div>
-    </div>
-    <div class="how-step">
-      <div class="step-num">04</div>
-      <div class="step-title">Stay forever</div>
-      <div class="step-desc">Your ad is permanent. No recurring fees.</div>
+    <p class="footnote reveal">Escalado: 100 estructuras ≈ 230.000 € por la vía experimental frente a ≈ 2.831 € por la vía computacional. El cribado no sustituye la validación experimental final: la concentra en una short-list de 5–10 candidatos en lugar de 100.</p>
+  </div>
+</section>
+
+<!-- ============ CONTACTO ============ -->
+<section id="contacto">
+  <div class="reveal">
+    <div class="sec-eyebrow" style="display:inline-block">Empecemos</div>
+    <h2 style="max-width:26ch">¿Cuántos candidatos descartarías antes de sintetizar el primero?</h2>
+    <p class="sec-sub" style="margin-left:auto;margin-right:auto">Cuéntanos tu reacción objetivo y te enviaremos una propuesta de cribado con alcance, plazos y entregables en menos de una semana.</p>
+    <div class="contact-cta">
+      <a class="btn solid" href="mailto:hola@catscreen.eu">hola@catscreen.eu</a>
+      <a class="btn ghost" href="#hero">Volver a la simulación</a>
     </div>
   </div>
 </section>
 
-<!-- CANVAS SECTION -->
-<section class="canvas-section" id="pixel-map">
-  <div class="canvas-info">
-    <span class="canvas-hint">
-      <strong>Click &amp; drag</strong> to select pixels → get instant price
-    </span>
-    <span id="selection-info"></span>
-  </div>
-  <div class="canvas-outer">
-    <canvas id="pixel-canvas" width="1000" height="1000"></canvas>
-  </div>
-</section>
-
-<!-- ADVERTISERS LIST -->
-<section class="pixel-list-section" id="advertisers">
-  <div class="section-title">Current Advertisers</div>
-  <table class="ads-table">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Advertiser</th>
-        <th>Pixels</th>
-        <th>Area</th>
-        <th>Link</th>
-      </tr>
-    </thead>
-    <tbody id="ads-tbody">
-      <tr class="empty-row"><td colspan="5">— No advertisers yet. Be the first! —</td></tr>
-    </tbody>
-  </table>
-</section>
-
-<!-- FOOTER -->
 <footer>
-  <p id="footer-text"></p>
+  <div class="fm">CatScreen · Spin-off de la Universitat de Barcelona<br>Parc Científic de Barcelona</div>
+  <div class="fm">DFT · GCMC · MACE · HPC<br><a href="#metodologia">Metodología</a> · <a href="#servicios">Servicios</a> · <a href="#ahorro">Ahorro</a></div>
 </footer>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modal">
-  <div class="modal">
-    <div class="modal-head">
-      <div class="modal-head-left">
-        <div class="modal-head-tag">Purchase pixels</div>
-        <div class="modal-head-title" id="m-title">Select pixels first</div>
-      </div>
-      <button class="modal-close" onclick="closeModal()">✕ close</button>
-    </div>
-    <div class="modal-body">
-      <div class="m-summary">
-        <div class="m-sum-item"><span class="m-sum-val" id="m-pixels">—</span><span class="m-sum-lbl">Pixels</span></div>
-        <div class="m-sum-item"><span class="m-sum-val" id="m-size">—</span><span class="m-sum-lbl">Size</span></div>
-        <div class="m-sum-item"><span class="m-sum-val" id="m-price">—</span><span class="m-sum-lbl">Total</span></div>
-      </div>
-
-      <div class="pay-block">
-        <div class="pay-block-title">Pay with PayPal</div>
-        <a id="paypal-btn" class="paypal-cta" href="#" target="_blank" rel="noopener">
-          💳 &nbsp; Pay with PayPal
-        </a>
-      </div>
-
-      <div class="pay-block">
-        <div class="pay-block-title">Pay with Crypto</div>
-        <div id="crypto-rows"></div>
-      </div>
-
-      <div class="m-instructions" id="m-instr"></div>
-
-      <div class="ad-form">
-        <div class="pay-block-title" style="margin-top:1rem">Your Ad Details (fill &amp; email)</div>
-        <div class="form-row">
-          <label class="form-label">Your Name / Company</label>
-          <input class="form-input" type="text" id="f-name" placeholder="Acme Corp">
-        </div>
-        <div class="form-row">
-          <label class="form-label">Your Website URL</label>
-          <input class="form-input" type="url" id="f-url" placeholder="https://example.com">
-        </div>
-        <div class="form-row">
-          <label class="form-label">Image URL (hosted elsewhere, or attach in email)</label>
-          <input class="form-input" type="url" id="f-img" placeholder="https://yoursite.com/ad.png">
-        </div>
-        <div class="form-row">
-          <label class="form-label">Pixel coordinates &amp; size</label>
-          <input class="form-input" id="f-coords" type="text" readonly>
-        </div>
-        <button class="form-submit" onclick="submitAdEmail()">📧 SEND AD REQUEST BY EMAIL</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ============================================================
-     JAVASCRIPT
-============================================================ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-(function() {
-  const C  = CONFIG;
-  const PX = C.pricePerPixel;
-  const MB = C.minBlock;
+/* ============================================================
+   CatScreen — hero: oxidación interactiva de Cu(111)
+   ============================================================ */
+(function(){
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ── helpers ──────────────────────────────────────────────────
-  const $  = id => document.getElementById(id);
-  const fmt = n  => n >= 1000 ? (n/1000).toFixed(0)+'K' : n;
-  const fmtMoney = v => '$' + v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  /* ---- intro ---- */
+  window.addEventListener('load', ()=> setTimeout(()=>{
+    document.getElementById('intro').classList.add('gone');
+  }, reduced ? 80 : 1450));
 
-  // ── populate static text ─────────────────────────────────────
-  document.title = C.title + ' — ' + C.subtitle;
-  $('hdr-title').textContent   = C.title;
-  $('hdr-tagline').innerHTML   = C.subtitle
-    .split('·').map(s => `<span>${s.trim()}</span>`)
-    .join('<span class="dot">·</span>');
-  $('nav-contact').href        = 'mailto:' + C.email;
-  $('footer-text').innerHTML   = `© ${new Date().getFullYear()} ${C.title} &nbsp;·&nbsp; Contact: <a href="mailto:${C.email}">${C.email}</a>`;
+  /* ---- nav ---- */
+  const nav = document.getElementById('nav');
+  addEventListener('scroll', ()=> nav.classList.toggle('scrolled', scrollY>30), {passive:true});
 
-  const totalPx  = C.canvasW * C.canvasH;
-  const soldPx   = C.ads.reduce((s,a)=>s+a.w*a.h,0);
-  const freePx   = totalPx - soldPx;
-  const pctSold  = ((soldPx/totalPx)*100).toFixed(2);
+  /* ---- marquee duplicate ---- */
+  const track = document.getElementById('stripTrack');
+  track.innerHTML += track.innerHTML;
 
-  $('bar-free').textContent  = fmt(freePx);
-  $('bar-taken').textContent = fmt(soldPx);
-  $('hdr-stats').innerHTML   = `
-    <div class="hstat"><span class="hstat-num">${fmt(totalPx)}</span><span class="hstat-lbl">Total Pixels</span></div>
-    <div class="hstat"><span class="hstat-num">${fmt(soldPx)}</span><span class="hstat-lbl">Sold</span></div>
-    <div class="hstat"><span class="hstat-num">${fmt(freePx)}</span><span class="hstat-lbl">Available</span></div>
-    <div class="hstat"><span class="hstat-num">${pctSold}%</span><span class="hstat-lbl">Filled</span></div>
-  `;
+  /* ---- reveal on scroll ---- */
+  const io = new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  }),{threshold:.18});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-  // ── ads table ────────────────────────────────────────────────
-  if (C.ads.length > 0) {
-    const tbody = $('ads-tbody');
-    tbody.innerHTML = '';
-    C.ads.forEach((ad, i) => {
-      const px = ad.w * ad.h;
-      tbody.innerHTML += `
-        <tr>
-          <td>${i+1}</td>
-          <td style="color:var(--text)">${ad.label}</td>
-          <td style="color:var(--green)">${px.toLocaleString()}</td>
-          <td>${ad.w}×${ad.h} px @ (${ad.x},${ad.y})</td>
-          <td><a href="${ad.url}" target="_blank" rel="noopener sponsored" style="color:var(--gold2)">${ad.url.replace(/^https?:\/\//,'')}</a></td>
-        </tr>`;
+  /* ---- counters + bars ---- */
+  const fmt = (v,d)=> v.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const io2 = new IntersectionObserver(es=>es.forEach(e=>{
+    if(!e.isIntersecting) return;
+    e.target.querySelectorAll('[data-count]').forEach(el=>{
+      const end=+el.dataset.count, dec=+el.dataset.dec, t0=performance.now(), dur=reduced?1:1600;
+      const tick=t=>{ const k=Math.min(1,(t-t0)/dur), ease=1-Math.pow(1-k,3);
+        el.textContent=fmt(end*ease,dec); if(k<1) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
     });
+    e.target.querySelectorAll('.bar i').forEach(b=> b.style.width=b.dataset.w);
+    io2.unobserve(e.target);
+  }),{threshold:.4});
+  io2.observe(document.getElementById('duel'));
+
+  /* ============ THREE.JS — Cu(111) slab ============ */
+  if(typeof THREE === 'undefined') return;
+  const canvas = document.getElementById('c3d');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0a0c12, 0.028);
+  const camera = new THREE.PerspectiveCamera(38, 2, .1, 200);
+  camera.position.set(0, 9.5, 17.5);
+  camera.lookAt(0, -0.5, 0);
+
+  scene.add(new THREE.AmbientLight(0x32281e, 1.4));
+  const key = new THREE.DirectionalLight(0xffc08a, 1.5); key.position.set(8,14,6); scene.add(key);
+  const rim = new THREE.DirectionalLight(0x7de3d8, .85); rim.position.set(-10,6,-8); scene.add(rim);
+  const oxLight = new THREE.PointLight(0xff4d2e, 0, 30); oxLight.position.set(0,4,0); scene.add(oxLight);
+
+  const group = new THREE.Group(); scene.add(group);
+
+  /* --- red FCC(111): 3 capas hexagonales ABC --- */
+  const a=1.6, ROWS=13, COLS=15, LAYERS=3;
+  const dz=a*Math.sqrt(3)/2, dy=a*0.816;
+  const cuPos=[], topAtoms=[];
+  const offX=[0, a/2, a], offZ=[0, dz/3, 2*dz/3];
+  for(let l=0;l<LAYERS;l++){
+    for(let r=0;r<ROWS;r++){
+      for(let c=0;c<COLS;c++){
+        const x=c*a+(r%2)*(a/2)+offX[l]-(COLS*a)/2;
+        const z=r*dz+offZ[l]-(ROWS*dz)/2;
+        const y=-l*dy;
+        cuPos.push([x,y,z]);
+        if(l===0) topAtoms.push([x,y,z]);
+      }
+    }
   }
+  const cuGeo=new THREE.SphereGeometry(a*0.46, 22, 18);
+  const cuMat=new THREE.MeshStandardMaterial({color:0xc97a3e, metalness:.85, roughness:.32, emissive:0x2a1305, emissiveIntensity:.5});
+  const cuMesh=new THREE.InstancedMesh(cuGeo, cuMat, cuPos.length);
+  const M=new THREE.Matrix4();
+  cuPos.forEach((p,i)=>{ M.makeTranslation(p[0],p[1],p[2]); cuMesh.setMatrixAt(i,M); });
+  cuMesh.instanceMatrix.needsUpdate=true;
+  cuMesh.frustumCulled=false;
+  group.add(cuMesh);
 
-  // ── CANVAS ───────────────────────────────────────────────────
-  const canvas = $('pixel-canvas');
-  const ctx    = canvas.getContext('2d');
-
-  // Build sold pixels Set for fast lookup
-  const soldSet = new Set();
-  C.ads.forEach(ad => {
-    for (let x = ad.x; x < ad.x + ad.w; x++)
-    for (let y = ad.y; y < ad.y + ad.h; y++)
-      soldSet.add(x + '_' + y);
-  });
-
-  function drawCanvas(selX, selY, selW, selH) {
-    const {canvasW: W, canvasH: H} = C;
-
-    // Background
-    ctx.fillStyle = '#0d0d0d';
-    ctx.fillRect(0, 0, W, H);
-
-    // Subtle grid dots every 10px
-    ctx.fillStyle = '#1e1e1e';
-    for (let x = 0; x < W; x += 10)
-    for (let y = 0; y < H; y += 10)
-      ctx.fillRect(x, y, 1, 1);
-
-    // Grid lines every 100px
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth   = 0.5;
-    for (let x = 0; x <= W; x += 100) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-    }
-    for (let y = 0; y <= H; y += 100) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    }
-
-    // Available blocks (very faint green tint every 100px cell)
-    for (let bx = 0; bx < 10; bx++)
-    for (let by = 0; by < 10; by++) {
-      const px = bx * 100, py = by * 100;
-      const isSold = C.ads.some(a =>
-        a.x <= px && a.y <= py &&
-        a.x + a.w >= px + 100 &&
-        a.y + a.h >= py + 100
-      );
-      if (!isSold) {
-        ctx.fillStyle = 'rgba(57,255,20,.018)';
-        ctx.fillRect(px+1, py+1, 99, 99);
-      }
-    }
-
-    // Sold ads
-    C.ads.forEach(ad => {
-      // fill
-      ctx.fillStyle = ad.color || '#1a1a3a';
-      ctx.fillRect(ad.x, ad.y, ad.w, ad.h);
-      // image if present
-      // (images would need preloading; for static page images are handled after payment)
-      // image or label
-      if (ad.img && ad._imgEl && ad._imgEl.complete) {
-        ctx.drawImage(ad._imgEl, ad.x, ad.y, ad.w, ad.h);
-      } else {
-        ctx.fillStyle = '#fff';
-        ctx.font = `bold ${Math.max(8, Math.min(14, ad.h/4))}px IBM Plex Mono, monospace`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(ad.label.slice(0,16), ad.x + ad.w/2, ad.y + ad.h/2);
-      }
-      // border
-      ctx.strokeStyle = 'rgba(255,255,255,.15)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(ad.x, ad.y, ad.w, ad.h);
-    });
-
-    // Selection overlay
-    if (selW > 0 && selH > 0) {
-      ctx.fillStyle = 'rgba(57,255,20,.18)';
-      ctx.fillRect(selX, selY, selW, selH);
-      ctx.strokeStyle = '#39ff14';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(selX, selY, selW, selH);
-      // corner decorations
-      const cs = 6;
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 1.5;
-      [[selX,selY],[selX+selW,selY],[selX,selY+selH],[selX+selW,selY+selH]].forEach(([cx,cy],i) => {
-        ctx.beginPath();
-        ctx.moveTo(cx + (i%2===0?0:  -cs), cy);
-        ctx.lineTo(cx + (i%2===0? cs:0),   cy);
-        ctx.moveTo(cx, cy + (i<2?0:  -cs));
-        ctx.lineTo(cx, cy + (i<2? cs:0));
-        ctx.stroke();
+  /* --- sitios hollow para O, con umbral de aparición determinista --- */
+  const rng=(s=>()=> (s=(s*16807)%2147483647)/2147483647)(987654321);
+  const oSites=[];
+  topAtoms.forEach(p=>{
+    if(rng()<0.62){
+      oSites.push({
+        x:p[0]+a/2+(rng()-.5)*.25, y:0.78+rng()*.12, z:p[2]+dz/3+(rng()-.5)*.25,
+        th:rng(), s:0
       });
     }
+  });
+  const oGeo=new THREE.SphereGeometry(a*0.3, 18, 14);
+  const oMat=new THREE.MeshStandardMaterial({color:0xff3b1f, metalness:.15, roughness:.45, emissive:0xff2a10, emissiveIntensity:.55});
+  const oMesh=new THREE.InstancedMesh(oGeo,oMat,oSites.length);
+  oMesh.frustumCulled=false;
+  group.add(oMesh);
+
+  /* --- adátomos Cu (unidades Cu3O4) a μ alto --- */
+  const adSites=[];
+  for(let i=0;i<26;i++){
+    const p=topAtoms[Math.floor(rng()*topAtoms.length)];
+    adSites.push({x:p[0]+(rng()-.5)*a, y:1.18, z:p[2]+(rng()-.5)*a, th:.55+rng()*.45, s:0});
+  }
+  const adMat=new THREE.MeshStandardMaterial({color:0xf0b27e, metalness:.85, roughness:.3, emissive:0x3a1c08, emissiveIntensity:.5});
+  const adMesh=new THREE.InstancedMesh(new THREE.SphereGeometry(a*0.42,20,16), adMat, adSites.length);
+  adMesh.frustumCulled=false;
+  group.add(adMesh);
+
+  /* ---- estado del slider / termodinámica ---- */
+  const slider=document.getElementById('dmu'),
+        dmuOut=document.getElementById('dmuOut'),
+        covOut=document.getElementById('covOut'),
+        pOut=document.getElementById('pOut'),
+        phDot=document.getElementById('phDot'),
+        phName=document.getElementById('phName'),
+        phSub=document.getElementById('phSub');
+
+  let dmu=parseFloat(slider.value);
+
+  function fracOcc(d){ // fracción de sitios O ocupados según Δμ
+    if(d < -1.64) return 0;
+    return Math.min(1, Math.pow((d+1.64)/0.50, 1.45));
+  }
+  function phase(d){
+    if(d < -1.64) return ['#9296A8','Cu(111) metálico limpio','superficie sin oxidar'];
+    if(d < -1.50) return ['#E8975A','Fase oxidada · θ ≈ 0,25 ML','adsorción de O en sitios hollow'];
+    if(d < -1.20) return ['#FF7A4D','Red de óxido · unidades Cu₃O₄','adátomos de Cu estabilizados por O'];
+    return ['#FF4D2E','Región de Cu₂O masivo','la descripción superficial deja de ser válida'];
+  }
+  function updateUI(){
+    const nf=(v,d)=>v.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+    dmuOut.textContent = '−'+nf(Math.abs(dmu),2)+' eV';
+    const f=fracOcc(dmu), theta=f*0.5;
+    covOut.textContent = nf(theta,2)+' ML';
+    const logp = 20.16*dmu + 10.3;
+    pOut.textContent = (logp<0?'−':'')+nf(Math.abs(logp),1);
+    const [c,n,s]=phase(dmu);
+    phDot.style.background=c;
+    phName.firstChild.textContent=n; phSub.textContent=s;
+    oxLight.intensity = f*1.6;
+  }
+  slider.addEventListener('input', ()=>{ dmu=parseFloat(slider.value); updateUI(); });
+  updateUI();
+
+  /* ---- demo automática hasta que el usuario toque el slider ---- */
+  let userTouched=false, autoT=0;
+  slider.addEventListener('pointerdown', ()=>userTouched=true, {once:true});
+
+  /* ---- interacción ratón ---- */
+  let mx=0,my=0;
+  addEventListener('pointermove',e=>{ mx=(e.clientX/innerWidth-.5); my=(e.clientY/innerHeight-.5); },{passive:true});
+
+  function resize(){
+    const w=canvas.clientWidth,h=canvas.clientHeight;
+    if(canvas.width!==w||canvas.height!==h){
+      renderer.setSize(w,h,false);
+      camera.aspect=w/h; camera.updateProjectionMatrix();
+    }
   }
 
-  // preload images then draw
-  let pending = C.ads.filter(a => a.img).length;
-  if (pending === 0) {
-    drawCanvas(0,0,0,0);
-  } else {
-    C.ads.forEach(ad => {
-      if (ad.img) {
-        const img = new Image();
-        img.onload = () => {
-          ad._imgEl = img;
-          pending--;
-          if (pending === 0) drawCanvas(0,0,0,0);
-        };
-        img.onerror = () => { pending--; if (pending===0) drawCanvas(0,0,0,0); };
-        img.src = ad.img;
-      }
+  const S=new THREE.Vector3(), Q=new THREE.Quaternion(), P=new THREE.Vector3();
+  function setInst(mesh,i,site,sc){
+    P.set(site.x,site.y,site.z); S.set(sc,sc,sc);
+    M.compose(P,Q,S); mesh.setMatrixAt(i,M);
+  }
+
+  let t=0;
+  function loop(){
+    requestAnimationFrame(loop);
+    resize();
+    t+=0.005;
+
+    if(!userTouched && !reduced){ // vaivén suave de Δμ en la demo
+      autoT+=0.0035;
+      dmu=-1.625+0.575*Math.sin(autoT);
+      slider.value=dmu.toFixed(2);
+      updateUI();
+    }
+
+    const f=fracOcc(dmu);
+    oSites.forEach((s2,i)=>{
+      const target = s2.th < f ? 1 : 0;
+      s2.s += (target-s2.s)*0.085;
+      const wob = 1 + Math.sin(t*3+i)*0.04*s2.s;
+      setInst(oMesh,i,s2, Math.max(0.0001,s2.s)*wob);
     });
-  }
+    oMesh.instanceMatrix.needsUpdate=true;
 
-  // ── selection logic ──────────────────────────────────────────
-  let dragging = false;
-  let startX = 0, startY = 0;
-  let selX = 0,  selY = 0, selW = 0, selH = 0;
-  let currentSel = null;
-
-  function snapToBlock(v) { return Math.round(v / MB) * MB; }
-
-  function getXY(e) {
-    const r = canvas.getBoundingClientRect();
-    const scaleX = C.canvasW / r.width;
-    const scaleY = C.canvasH / r.height;
-    const src = e.touches ? e.touches[0] : e;
-    return {
-      x: Math.max(0, Math.min(C.canvasW, (src.clientX - r.left) * scaleX)),
-      y: Math.max(0, Math.min(C.canvasH, (src.clientY - r.top ) * scaleY))
-    };
-  }
-
-  canvas.addEventListener('mousedown', e => {
-    const {x,y} = getXY(e);
-    dragging = true;
-    startX = snapToBlock(x);
-    startY = snapToBlock(y);
-    selW = selH = 0;
-  });
-
-  canvas.addEventListener('mousemove', e => {
-    const {x,y} = getXY(e);
-    const tip = $('tooltip');
-    tip.style.display = 'block';
-    tip.style.left    = (e.clientX + 14) + 'px';
-    tip.style.top     = (e.clientY + 14) + 'px';
-
-    if (dragging) {
-      const ex = snapToBlock(x), ey = snapToBlock(y);
-      const nx = Math.min(startX, ex), ny = Math.min(startY, ey);
-      const nw = Math.max(MB, Math.abs(ex - startX));
-      const nh = Math.max(MB, Math.abs(ey - startY));
-      selX = nx; selY = ny; selW = nw; selH = nh;
-      const px = nw * nh;
-      const price = px * PX;
-      $('selection-info').textContent = `${nw}×${nh}px = ${px.toLocaleString()} pixels = ${fmtMoney(price)}`;
-      tip.innerHTML = `<strong>${nw}×${nh}</strong> = ${px.toLocaleString()} px · <strong style="color:var(--green)">${fmtMoney(price)}</strong>`;
-      drawCanvas(selX, selY, selW, selH);
-    } else {
-      const cx = Math.floor(x / MB) * MB;
-      const cy = Math.floor(y / MB) * MB;
-      tip.textContent = `(${cx}, ${cy})`;
-    }
-  });
-
-  canvas.addEventListener('mouseup', e => {
-    if (!dragging) return;
-    dragging = false;
-    if (selW >= MB && selH >= MB) {
-      currentSel = { x: selX, y: selY, w: selW, h: selH };
-      drawCanvas(selX, selY, selW, selH);
-    }
-  });
-
-  canvas.addEventListener('mouseleave', () => {
-    $('tooltip').style.display = 'none';
-    if (dragging) { dragging = false; }
-  });
-
-  // ── click outside canvas resets selection ──────────────────────
-  document.addEventListener('click', e => {
-    if (!canvas.contains(e.target) && !$('modal').contains(e.target)) {
-      selX = 0; selY = 0; selW = 0; selH = 0;
-      currentSel = null;
-      $('selection-info').textContent = '';
-      drawCanvas(0, 0, 0, 0);
-    }
-  });
-
-  // touch support
-  canvas.addEventListener('touchstart', e => {
-    e.preventDefault();
-    const {x,y} = getXY(e);
-    dragging = true;
-    startX = snapToBlock(x); startY = snapToBlock(y);
-  }, {passive:false});
-  canvas.addEventListener('touchmove', e => {
-    e.preventDefault();
-    const {x,y} = getXY(e);
-    const ex = snapToBlock(x), ey = snapToBlock(y);
-    selX = Math.min(startX,ex); selY = Math.min(startY,ey);
-    selW = Math.max(MB, Math.abs(ex-startX));
-    selH = Math.max(MB, Math.abs(ey-startY));
-    const px = selW*selH, price = px*PX;
-    $('selection-info').textContent = `${selW}×${selH} = ${px.toLocaleString()} px = ${fmtMoney(price)}`;
-    drawCanvas(selX,selY,selW,selH);
-  }, {passive:false});
-  canvas.addEventListener('touchend', () => {
-    dragging = false;
-    if (selW >= MB && selH >= MB) currentSel = {x:selX,y:selY,w:selW,h:selH};
-  });
-
-  // click on canvas → check ad click OR open modal for selection
-  canvas.addEventListener('click', e => {
-    const {x, y} = getXY(e);
-    // check if clicked inside a sold ad
-    const clickedAd = C.ads.find(a => x >= a.x && x < a.x+a.w && y >= a.y && y < a.y+a.h);
-    if (clickedAd && clickedAd.url) {
-      window.open(clickedAd.url, '_blank', 'noopener');
-      return;
-    }
-    if (currentSel && currentSel.w >= MB && currentSel.h >= MB) {
-      populateModal(currentSel);
-      openModal();
-    }
-  });
-
-  // ── modal logic ───────────────────────────────────────────────
-  function populateModal(sel) {
-    const px    = sel.w * sel.h;
-    const price = px * PX;
-    const coords = `x:${sel.x} y:${sel.y} w:${sel.w} h:${sel.h}`;
-
-    $('m-title').textContent   = `${sel.w}×${sel.h} pixel block`;
-    $('m-pixels').textContent  = px.toLocaleString();
-    $('m-size').textContent    = `${sel.w}×${sel.h}`;
-    $('m-price').textContent   = fmtMoney(price);
-    $('f-coords').value        = coords;
-
-    // PayPal
-    const note = encodeURIComponent(`Pixels ${coords}`);
-    $('paypal-btn').href = `https://${C.paypalMe}/${price.toFixed(2)}USD?item_name=${note}`;
-
-    // Crypto
-
-    $('crypto-rows').innerHTML = C.wallets.map(w => `
-      <div class="crypto-row">
-        <div class="c-icon ${w.cls}">${w.icon}</div>
-        <div class="c-info">
-          <div class="c-name">${w.coin} <span style="color:var(--muted);font-size:.6rem">${w.network}</span> — ${fmtMoney(price)} equiv.</div>
-          <div class="c-addr">${w.addr}</div>
-        </div>
-        <button class="c-copy" onclick="copyWallet(this,'${w.addr}')">COPY</button>
-      </div>`).join('');
-
-    $('m-instr').innerHTML = `
-      <strong>Instructions:</strong><br>
-      1. Pay the exact amount via PayPal or crypto.<br>
-      2. Email <a href="mailto:${C.email}">${C.email}</a> with:<br>
-         &nbsp;&nbsp;· Payment confirmation / TX hash<br>
-         &nbsp;&nbsp;· Your pixel coordinates: <strong>${coords}</strong><br>
-         &nbsp;&nbsp;· Your ad image (PNG/JPG) <strong>${sel.w}×${sel.h}px</strong>)<br>
-         &nbsp;&nbsp;· Your website URL<br>
-      3. Your ad goes live within 24 hours ✓`;
-  }
-
-  function openModal() {
-    $('modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  window.closeModal = function() {
-    $('modal').classList.remove('open');
-    document.body.style.overflow = '';
-  };
-  $('modal').addEventListener('click', e => { if(e.target===$('modal')) closeModal(); });
-  document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
-
-  window.openBuyFlow = function() {
-    if (currentSel && currentSel.w >= MB) {
-      populateModal(currentSel);
-      openModal();
-    } else {
-      // open modal with instructions to select first
-      $('m-title').textContent  = 'Select pixels first';
-      $('m-pixels').textContent = '—';
-      $('m-size').textContent   = '—';
-      $('m-price').textContent  = '—';
-      $('m-instr').innerHTML    = 'Please <strong>click and drag</strong> on the pixel map below to select the area you want to purchase, then click it to open this window again.';
-      $('crypto-rows').innerHTML = '';
-      $('paypal-btn').href = '#';
-      $('f-coords').value = '';
-      openModal();
-    }
-  };
-
-  window.scrollToCanvas = function() {
-    $('pixel-map').scrollIntoView({behavior:'smooth'});
-  };
-
-  // ── copy wallet ───────────────────────────────────────────────
-  window.copyWallet = function(btn, addr) {
-    navigator.clipboard.writeText(addr).then(() => {
-      btn.textContent = '✓ COPIED';
-      btn.classList.add('ok');
-      setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('ok'); }, 2000);
+    const fa=Math.max(0,(f-0.45)/0.55);
+    adSites.forEach((s2,i)=>{
+      const target = s2.th < (0.55+fa*0.45) && fa>0 ? 1 : 0;
+      s2.s += (target-s2.s)*0.07;
+      setInst(adMesh,i,s2, Math.max(0.0001,s2.s));
     });
-  };
+    adMesh.instanceMatrix.needsUpdate=true;
 
-  // ── email submit ──────────────────────────────────────────────
-  window.submitAdEmail = function() {
-    const name   = $('f-name').value   || '(no name)';
-    const url    = $('f-url').value    || '(no url)';
-    const img    = $('f-img').value    || '(no image url)';
-    const coords = $('f-coords').value || '(no coords)';
-    const subj   = encodeURIComponent(`Ad Request — ${coords}`);
-    const body   = encodeURIComponent(
-      `Hello,\n\nI'd like to purchase pixels on ${C.title}.\n\n`+
-      `Advertiser: ${name}\nWebsite: ${url}\nImage URL: ${img}\n`+
-      `Pixel coordinates: ${coords}\n\n`+
-      `I have completed payment. Please find my confirmation attached.\n\nThank you!`
-    );
-    window.open(`mailto:${C.email}?subject=${subj}&body=${body}`);
-  };
-
+    if(!reduced){
+      group.rotation.y = Math.sin(t*0.5)*0.16 + mx*0.22;
+      group.rotation.x = my*0.07;
+      group.position.y = Math.sin(t*1.2)*0.08;
+    }
+    renderer.render(scene,camera);
+  }
+  loop();
 })();
 </script>
 </body>
